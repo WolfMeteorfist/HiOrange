@@ -49,6 +49,7 @@ android {
         }
     }
 
+    //resValue啥的可以用来差异化
     productFlavors{
         baidu{}
     }
