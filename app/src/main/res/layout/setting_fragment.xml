@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/activity_background"
+              android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="230dp"
+        android:background="@color/head_background"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.yuanshi.hiorange.view.MyImageView
+            android:id="@+id/img_mine_head"
+            android:layout_width="@dimen/head_image_radius"
+            android:layout_height="@dimen/head_image_radius"
+            android:src="@mipmap/automan"/>
+
+        <TextView
+            android:id="@+id/tv_mine_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="啃罐头鱼的浪趴猫"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/toolbar_title"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_mine_unbinding"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:scaleType="center"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/mine_icon_bind_manager"
+                tools:ignore="ContentDescription"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/binding_managerbox"
+                android:textColor="@color/mine_text"
+                android:textSize="18sp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/mine_icon_more"
+                tools:ignore="ContentDescription"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/line_marginleft"
+            android:background="@color/gap_line"/>
+
+        <LinearLayout
+            android:id="@+id/ll_mine_voice"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:scaleType="center"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/mine_icon_voice"
+                tools:ignore="ContentDescription"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/volume_alarm"
+                android:textColor="@color/mine_text"
+                android:textSize="18sp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/mine_icon_more"
+                tools:ignore="ContentDescription"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/line_marginleft"
+            android:background="@color/gap_line"/>
+
+        <LinearLayout
+            android:id="@+id/ll_mine_finger"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:scaleType="center"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/mine_icon_finger"
+                tools:ignore="ContentDescription"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/finger_manager"
+                android:textColor="@color/mine_text"
+                android:textSize="18sp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/mine_icon_more"
+                tools:ignore="ContentDescription"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/line_marginleft"
+            android:background="@color/gap_line"/>
+
+        <LinearLayout
+            android:id="@+id/ll_mine_firware_update"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="62dp"
+                android:layout_height="62dp"
+                android:scaleType="center"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/mine_icon_firmware_upgrade"
+                tools:ignore="ContentDescription"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                android:text="@string/firware_update"
+                android:textColor="@color/mine_text"
+                android:textSize="18sp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/mine_icon_more"
+                tools:ignore="ContentDescription"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_mine_alarm_info"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:scaleType="center"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/mine_icon_alarm_info"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:text="@string/alarm_info"
+            android:textColor="@color/mine_text"
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/mine_icon_more"
+            tools:ignore="ContentDescription"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_mine_about_app"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/white"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="62dp"
+            android:layout_height="62dp"
+            android:scaleType="center"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/mine_icon_alarm_info"
+            tools:ignore="ContentDescription"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:text="@string/about_app"
+            android:textColor="@color/mine_text"
+            android:textSize="18sp"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/mine_icon_more"
+            tools:ignore="ContentDescription"/>
+
+    </LinearLayout>
+
+</LinearLayout>

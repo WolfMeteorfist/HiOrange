@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HiOrange</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="home_box">Box</string>
+    <string name="home_location">Location</string>
+    <string name="home_controller">Controller</string>
+    <string name="home_setting">Setting</string>
+    <string name="binding_managerbox">Binding Management</string>
+    <string name="notifyMsg">Missing necessary permissions</string>
+    <string name="setting">Setting</string>
+    <string name="cancel">Cancel</string>
+    <string name="encode_qrcode">EnQrcode</string>
+    <string name="dencode_qrcode">ScanQrcode</string>
+    <string name="notifyTitle">Tips</string>
+    <string name="about_app">About App</string>
+    <string name="firware_update">Firmware Upgrade</string>
+    <string name="finger_manager">Finger Manager</string>
+    <string name="alarm_info">Alarm Information</string>
+    <string name="volume_alarm">Voice Reminder</string>
+    <string name="password_different">Password is different, please re-enter</string>
+    <string name="input_incomplete">The input is incomplete, please confirm</string>
+    <string name="user_register">User Register</string>
+    <string name="phone_hint">Please enter phone number</string>
+    <string name="password_confirm_hint">Please confirm password</string>
+    <string name="verifycode_hint">Please enter verifyCode</string>
+    <string name="code_send">GetCode</string>
+    <string name="password_hint">Please enter password</string>
+    <string name="register_now">Register</string>
+    <string name="network_failed">Please confirm to access the network and re-operation</string>
+    <string name="box_info_closed_state">Closed State</string>
+    <string name="box_info_lock_state">Locked State</string>
+    <string name="box_info_life_time">Life Time</string>
+    <string name="box_info_weight">Box Weight</string>
+    <string name="box_info_unlock">Unlock</string>
+    <string name="login_get_info">Getting BoxIinfo...</string>
+    <string name="Connect">Connect</string>
+    <string name="box_info_power">Power</string>
+    <string name="box_info_lock">Lock</string>
+    <string name="bind">Bind</string>
+    <string name="current_box_id">Current Box-Id</string>
+    <string name="input_box_id">Please input the Box-Id</string>
+    <string name="unbind">Unbind</string>
+</resources>

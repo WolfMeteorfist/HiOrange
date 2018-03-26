@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/finger_image_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/finger_boder_dialog"
+        android:padding="50dp"
+        android:src="@drawable/addbox_img">
+    </ImageView>
+
+    <Button
+        android:id="@+id/finger_btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/finger_image_dialog"
+        android:background="@drawable/register_button"
+        android:layout_centerHorizontal="true"
+        android:text="取消"/>
+
+</RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="checked_color">#22DEF4</color>
+    <color name="uncheck_color">#6D89A0</color>
+    <color name="activity_background">#F2F2F2</color>
+    <color name="gap_line">#D1D1D1</color>
+    <color name="head_background">#1A202E</color>
+    <color name="circle_jianbian">#001A202E</color>
+    <color name="button_text_color">#333333</color>
+    <color name="circle_color">#FFFFFF</color>
+    <!-- QRCode scanner color begin -->
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="result_view">#B0000000</color>
+    <color name="viewfinder_frame">#90FFFFFF</color>
+    <color name="result_point_color">#C0FFFF00</color>
+    <color name="laser_color">#22DEF4</color>
+    <color name="corner_color">#22DEF4</color>
+    <color name="hint_color">#C6C6C6</color>
+    <color name="black">#000000</color>
+    <color name="error_warn">#ff6565</color>
+    <color name="boder_focus_color">#838383</color>
+    <color name="mine_text">#333333</color>
+    <color name="statue_bar">#66F2F2F2</color>
+    <!-- QRCode scanner color end -->
+</resources>

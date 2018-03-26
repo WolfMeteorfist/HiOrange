@@ -1,0 +1,86 @@
+apply plugin: 'com.android.application'
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '27.0.1'
+    defaultConfig {
+        applicationId "com.yuanshi.hiorange"
+        minSdkVersion 22
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        flavorDimensions("versionCode")
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    //signingConfigs代码块一定要写在buildTypes前面
+    signingConfigs {
+        debug {
+//            storeFile file('C:/Users/Administrator/.android/debug.keystore')
+//            storePassword "516562"
+//            keyAlias "Zyc"
+//            keyPassword "yb516562"
+            v2SigningEnabled true
+        }
+        release {
+//            storeFile file('G:/HiOrange/build/hi_orange.jks')
+//            storePassword "516562"
+//            keyAlias "Zyc"
+//            keyPassword "yb516562"
+            v2SigningEnabled true
+        }
+    }
+
+
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+
+        }
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+//            minifyEnabled true
+//            zipAlignEnabled true
+//            shrinkResources true
+        }
+    }
+
+    productFlavors{
+        baidu{}
+    }
+
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [MTA_CHANNEL_VALUE: name]
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def fileName = "Hi_Orange_${defaultConfig.versionName}_${variant.productFlavors.name}_${releaseTime()}.apk"
+            outputFileName = fileName
+        }
+    }
+
+}
+
+dependencies {
+    compile 'com.meituan.android.walle:library:1.1.6'
+    compile 'com.amap.api:3dmap:6.0.0'
+    compile 'com.amap.api:location:3.8.0'
+    compile 'com.google.zxing:core:3.3.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    compile 'org.litepal.android:core:1.6.1'
+    implementation 'com.google.code.gson:gson:2.2.4'
+    compile 'com.github.zcweng:switch-button:0.0.3@aar'
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+}

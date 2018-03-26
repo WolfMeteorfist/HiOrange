@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">HiOrange</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="home_box">箱子</string>
+    <string name="home_location">位置</string>
+    <string name="home_controller">遥控</string>
+    <string name="home_setting">我的</string>
+    <string name="binding_managerbox">绑定管理</string>
+    <string name="volume_alarm">声音提醒</string>
+    <string name="finger_manager">指纹管理</string>
+    <string name="firware_update">固件更新</string>
+    <string name="alarm_info">报警信息</string>
+    <string name="about_app">关于APP</string>
+    <string name="valuePaintColor">#000000</string>
+    <string name="unitPaintColor">#BBBBBB</string>
+    <string name="desPaintColor">#808080</string>
+    <string name="circlePaintColor">#3B4953</string>
+    <string name="circleLinePaintColor">#1AE9EB</string>
+    <string name="titlePaintColor">#FFFFFF</string>
+
+    <string name="notifyTitle">提示</string>
+    <string name="notifyMsg">当前应用缺少必要权限。\n\n请点击\"设置\"-\"权限\"-打开所需权限。</string>
+    <string name="setting">设置</string>
+    <string name="cancel">取消</string>
+
+
+
+    <string name="encode_qrcode">生成二维码</string>
+    <string name="dencode_qrcode">扫描二维码</string>
+    <string name="code_text">请输入生成二维码的文本信息</string>
+    <string name="qrcodetext">这里显示扫描结果</string>
+    <string name="password_different">密码不一致，请重新输入</string>
+    <string name="input_incomplete">输入不完整，请确认</string>
+    <string name="user_register">新用户注册</string>
+    <string name="network_failed">请确认接入网络后重新操作</string>
+    <string name="phone_hint">请输入手机号</string>
+    <string name="password_confirm_hint">请确认密码</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="verifycode_hint">请输入验证码</string>
+    <string name="code_send">发送验证码</string>
+    <string name="register_now">立即注册</string>
+    <string name="box_info_closed_state">开合状态</string>
+    <string name="box_info_lock_state">箱锁状态</string>
+    <string name="box_info_life_time">预计续航</string>
+    <string name="box_info_weight">箱子重量</string>
+    <string name="box_info_unlock">远程开锁</string>
+    <string name="login_get_info">箱子信息获取中...</string>
+    <string name="Connect">连接</string>
+    <string name="box_info_power">电量</string>
+    <string name="box_info_lock">上锁</string>
+    <string name="unbind">解绑</string>
+    <string name="input_box_id">请输入行李箱ID</string>
+    <string name="bind">绑定</string>
+    <string name="current_box_id">当前绑定行李箱ID</string>
+
+</resources>

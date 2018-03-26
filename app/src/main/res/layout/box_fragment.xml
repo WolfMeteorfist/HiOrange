@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@mipmap/box_backgroud"
+              android:gravity="center"
+              android:orientation="vertical">
+
+    <com.yuanshi.hiorange.view.BatteryView
+        android:id="@+id/batteryView_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+    <LinearLayout
+        android:id="@+id/ll_box_topshow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginEnd="21dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/box_show_square_up"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <com.yuanshi.hiorange.view.BoxInfoView
+            android:id="@+id/boxview_box_weight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:description="@string/box_info_weight"
+            app:drawable="@drawable/weight_icon"
+            app:unit="kg"/>
+
+        <View
+            android:layout_width="1sp"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            android:background="@android:color/darker_gray"/>
+
+        <com.yuanshi.hiorange.view.BoxInfoView
+            android:id="@+id/boxview_box_battery"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:description="@string/box_info_life_time"
+            app:drawable="@drawable/life_time"
+            app:unit="km"/>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="54dp"
+        android:layout_marginStart="54dp"
+        android:background="@color/hint_color"/>
+
+    <LinearLayout
+        android:id="@+id/ll_box_undershow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="21dp"
+        android:layout_marginStart="21dp"
+        android:background="@drawable/box_show_square_down"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <com.yuanshi.hiorange.view.BoxInfoView
+            android:id="@+id/boxview_box_closed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:description="@string/box_info_closed_state"
+            app:drawable="@drawable/closed_icon"
+            app:unit=" "/>
+
+        <View
+            android:layout_width="1sp"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            android:background="@android:color/darker_gray"/>
+
+        <com.yuanshi.hiorange.view.BoxInfoView
+            android:id="@+id/boxview_box_locking"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:description="@string/box_info_lock_state"
+            app:drawable="@drawable/locking"
+            app:unit=" "/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_box_unlocking"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/unlocking_button"
+        android:enabled="false"
+        android:text="@string/box_info_unlock"
+        android:textColor="@color/button_text_color"
+        android:textSize="18sp"/>
+
+</LinearLayout>

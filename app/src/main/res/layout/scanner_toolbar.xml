@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.Toolbar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="#000000">
+
+
+        <ImageView
+            android:id="@+id/scanner_toolbar_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:src="@mipmap/abc_ic_ab_back_mtrl_am_alpha"/>
+
+        <TextView
+            android:id="@+id/scanner_toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="扫描二维码绑定"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"/>
+
+        <!--<ImageView-->
+            <!--android:id="@+id/scanner_toolbar_more"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:paddingRight="20dp"-->
+            <!--android:src="@mipmap/abc_ic_menu_moreoverflow_mtrl_alpha"/>-->
+
+
+
+</android.support.v7.widget.Toolbar>

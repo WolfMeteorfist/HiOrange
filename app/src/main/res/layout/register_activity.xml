@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#FAFAFA">
+
+
+    <include layout="@layout/tool_include"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/tb"
+        android:background="@color/hint_color"/>
+
+
+    <EditText
+        android:id="@+id/et_register_phonenumber"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/tb"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="20dp"
+        android:padding="10dp"
+        android:background="@drawable/register_et_border"
+        android:hint="@string/phone_hint"
+        android:inputType="phone"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:textColorHint="@color/hint_color"/>
+
+    <EditText
+        android:id="@+id/et_register_password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/et_register_phonenumber"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:background="@drawable/register_et_border"
+        android:hint="@string/password_hint"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:textColorHint="@color/hint_color"/>
+
+    <EditText
+        android:id="@+id/et_register_password_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/et_register_password"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginTop="16dp"
+        android:padding="10dp"
+        android:background="@drawable/register_et_border"
+        android:hint="@string/password_confirm_hint"
+        android:inputType="textPassword"
+        android:maxLines="1"
+        android:textSize="16sp"
+        android:textColorHint="@color/hint_color"/>
+
+    <EditText
+        android:id="@+id/et_register_identify_code"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@id/et_register_password_confirm"
+        android:layout_marginEnd="13dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="16dp"
+        android:layout_toStartOf="@+id/btn_register_identify_send"
+        android:background="@drawable/register_et_border"
+        android:padding="10dp"
+        android:hint="@string/verifycode_hint"
+        android:textSize="16sp"
+        android:maxLength="6"
+        android:maxLines="1"
+        android:textColorHint="@color/hint_color"/>
+
+    <Button
+        android:id="@+id/btn_register_identify_send"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/et_register_password_confirm"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/register_btn_border"
+        android:text="@string/code_send"
+
+        android:textColor="@android:color/black"/>
+
+    <Button
+        android:id="@+id/btn_register_register"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_below="@+id/et_register_identify_code"
+        android:layout_marginEnd="14dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="46dp"
+        android:background="@drawable/login_button"
+        android:text="立即注册"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"/>
+
+</RelativeLayout>
