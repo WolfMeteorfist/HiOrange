@@ -312,7 +312,7 @@ public class ResultRequest implements IResultModel {
                                     case FinalString.READ_FINGER:
 
                                         if (type.equals(Command.TYPE_FINGER) && command.substring(6, 8).equals("01")) {
-                                            //成功!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                            //成功!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!5555080105000008091
                                             ((IFingerView) (mObjectView)).onReadSucceed(command);
                                         } else {
                                             //重新获取

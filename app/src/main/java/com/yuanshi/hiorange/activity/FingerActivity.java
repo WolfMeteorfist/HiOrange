@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +88,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         setContentView(R.layout.finger_activity);
         mReadDialog = new AlertDialog.Builder(this)
                 .setMessage("获取指纹信息中")
-                .setCancelable(false)
+                .setCancelable(true)
                 .create();
         initData();
         initView();
@@ -177,13 +178,26 @@ public class FingerActivity extends BaseActivity implements IFingerView {
     @Override
     public void onReadSucceed(String result) {
         //取得command,判断当前指纹录入情况
+        Log.e(TAG, "onReadSucceed: " + result);
         dissmissDialog();
         if (requestType == FinalString.FINGER_DELETE) {
             showToast(this, "删除成功");
-            mAdapter.updateData();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mAdapter.updateData();
+
+                }
+            });
         } else if (requestType == FinalString.READ_FINGER) {
             fingerUsable = result.substring(10, 15);
-            mAdapter.notifyDataSetChanged();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mAdapter.notifyDataSetChanged();
+
+                }
+            });
         }
 
     }
@@ -191,13 +205,16 @@ public class FingerActivity extends BaseActivity implements IFingerView {
 
     @Override
     public void onReadFailed(String result) {
+
+        Log.e(TAG, "onReadFailed: " + result);
         dissmissDialog();
-        showToast(this, "操作失败: " +result);
+        showToast(this, "操作失败: " + result);
     }
 
     @Override
     public void onRegisterSucceed(int regCout) {
         //录入成功反馈，可以用于添加录入成功后的动画效果或UI更新
+        Log.e(TAG, "onRegisterSucceed: " + regCout);
         if (regCout < 3) {
             showToast(this, "录入成功，请再次录入");
             return;
@@ -234,7 +251,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
             mGetTime = TimesCalculator.getStringDate();
             requestType = FinalString.READ_FINGER;
             PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId)
-                    .doRequest(FingerActivity.this, mGetTime, requestType, commandGet, this);
+                    .doRequest(FingerActivity.this, mGetTime, requestType, commandGet, FingerActivity.this);
         }
 
         @Override
@@ -267,7 +284,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
                                 mGetTime = TimesCalculator.getStringDate();
                                 commandDelete = getCommand(typeDelete, ps.toString());
                                 PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId)
-                                        .doRequest(FingerActivity.this, mGetTime, requestType, commandDelete, this);
+                                        .doRequest(FingerActivity.this, mGetTime, requestType, commandDelete, FingerActivity.this);
                             }
                         });
                         mDeleteDialog.show();
@@ -278,7 +295,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
                         mGetTime = TimesCalculator.getStringDate();
                         commandRegister = getCommand(typeRegister, ps.toString());
                         PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId)
-                                .doRequest(FingerActivity.this, mGetTime, requestType, commandRegister, this);
+                                .doRequest(FingerActivity.this, mGetTime, requestType, commandRegister, FingerActivity.this);
                     }
                 }
             });
