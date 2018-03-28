@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="com.meituan.android.walle:library-1.1.6">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-1.1.6.aar/5bcc59f7cd474fc76d4a338014b60ebb/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-1.1.6.aar/5bcc59f7cd474fc76d4a338014b60ebb/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-1.1.6.aar/0c7042c0e91bada5d65e2fbaad888146/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-1.1.6.aar/0c7042c0e91bada5d65e2fbaad888146/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
