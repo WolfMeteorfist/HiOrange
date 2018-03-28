@@ -37,11 +37,11 @@ public class ResultRequest implements IResultModel {
     private final String ERROR_OFFLINE = "11";
 
 
-    private final String commandReadInfo = Command.getCommand(Command.TYPE_READ_BOX, "00", "00", "00");
-    private final String commandUnLock = Command.getCommand(Command.TYPE_LOCK, "02", "02", "02");
-    private final String commandLock = Command.getCommand(Command.TYPE_LOCK, "02", "02", "01");
-    private final String commandLockedState = Command.getCommand(Command.TYPE_LOCK, "01", "00", "");
-    private final String commandReadVoice = Command.getCommand(Command.TYPE_VOICE, Command.VOICE_READ, "00", "");
+//    private final String commandReadInfo = Command.getCommand(Command.TYPE_READ_BOX, "00", "00", "00");
+//    private final String commandUnLock = Command.getCommand(Command.TYPE_LOCK, "02", "02", "02");
+//    private final String commandLock = Command.getCommand(Command.TYPE_LOCK, "02", "02", "01");
+//    private final String commandLockedState = Command.getCommand(Command.TYPE_LOCK, "01", "00", "");
+//    private final String commandReadVoice = Command.getCommand(Command.TYPE_VOICE, Command.VOICE_READ, "00", "");
 //    private final String commandSetVoice = Command.getCommand(Command.TYPE_VOICE, Command.VOICE_SET, "12", );
 
 
@@ -50,7 +50,7 @@ public class ResultRequest implements IResultModel {
 
 
     //申请超时时间
-    private final long REQUEST_TIME_OUT = 10 * 1000;
+    private long REQUEST_TIME_OUT = 10 * 1000;
 
     //命令有效时间
     private final long CMD_TIME_OUT = 60 * 1000;
@@ -69,6 +69,7 @@ public class ResultRequest implements IResultModel {
     private boolean locked;
     private String mCommand;
     private int regCount;
+    private boolean isStop;
 
 
     ResultRequest() {
@@ -154,6 +155,9 @@ public class ResultRequest implements IResultModel {
                     if (errorCode.equals(ERROR_OK)) {
                         String currentTime = TimesCalculator.getStringDate();
                         long wastedTime = TimesCalculator.calculateSeconds(currentTime, getTime);
+                        if (getType == FinalString.FINGER_REGISTER) {
+                            REQUEST_TIME_OUT = 20 * 1000;
+                        }
                         //是否请求超时，<则未超时
                         if (wastedTime < REQUEST_TIME_OUT) {
                             String cmdTime = jsonObject.getString(FinalString.TIME);
@@ -345,7 +349,7 @@ public class ResultRequest implements IResultModel {
                                 ((IBoxView) (mObjectView)).onReadFailed(result);
                             } else if (mObjectView instanceof IVoiceView) {
                                 ((IVoiceView) (mObjectView)).onReadFailed(result);
-                            }else if (mObjectView instanceof IFingerView) {
+                            } else if (mObjectView instanceof IFingerView) {
                                 ((IFingerView) (mObjectView)).onReadFailed(result);
                             }
                         }
@@ -355,7 +359,7 @@ public class ResultRequest implements IResultModel {
                             ((IBoxView) (mObjectView)).onReadFailed(result);
                         } else if (mObjectView instanceof IVoiceView) {
                             ((IVoiceView) (mObjectView)).onReadFailed(result);
-                        }else if (mObjectView instanceof IFingerView) {
+                        } else if (mObjectView instanceof IFingerView) {
                             ((IFingerView) (mObjectView)).onReadFailed(result);
                         }
                     }
@@ -365,7 +369,7 @@ public class ResultRequest implements IResultModel {
                         ((IBoxView) (mObjectView)).onReadFailed(result);
                     } else if (mObjectView instanceof IVoiceView) {
                         ((IVoiceView) (mObjectView)).onReadFailed(result);
-                    }else if (mObjectView instanceof IFingerView) {
+                    } else if (mObjectView instanceof IFingerView) {
                         ((IFingerView) (mObjectView)).onReadFailed(result);
                     }
                     e.printStackTrace();

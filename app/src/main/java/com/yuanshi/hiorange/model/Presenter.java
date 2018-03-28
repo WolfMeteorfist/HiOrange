@@ -182,7 +182,6 @@ public class Presenter implements IPresenter {
             e.printStackTrace();
         }
 
-
         ResultRequest resultRequest = new ResultRequest();
         resultRequest.executeRegisterTask(jsonObject, mIRegisterView);
     }
@@ -217,10 +216,8 @@ public class Presenter implements IPresenter {
 
     /**
      * 获取终端箱子信息
-     *
-     * @param context
-     * @param objectView 泛型
-     */
+     *  @param context
+     * @param objectView 泛型*/
     @Override
     public void getInfo(Context context, @NonNull String getTime, @NonNull int getType, String command, Object objectView) {
         JSONObject jsonObject = new JSONObject();

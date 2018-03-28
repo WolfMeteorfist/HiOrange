@@ -23,6 +23,7 @@ import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.TimesCalculator;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -65,6 +66,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
     private AlertDialog mReadDialog;
     private MyAdapter mAdapter;
     private String mGetTime;
+    private ThreadPoolExecutor mThreadPoolExecutor;
 
     class ViewHolder1 {
         @BindView(R.id.back)
@@ -88,7 +90,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         setContentView(R.layout.finger_activity);
         mReadDialog = new AlertDialog.Builder(this)
                 .setMessage("获取指纹信息中")
-                .setCancelable(true)
+                .setCancelable(false)
                 .create();
         initData();
         initView();
@@ -99,7 +101,16 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         ViewHolder1 viewActivity = new ViewHolder1();
         ViewHolder2 viewDialog = new ViewHolder2();
 
+        //指纹录取
         View view = LayoutInflater.from(this).inflate(R.layout.finger_dialog, null);
+        view.findViewById(R.id.finger_btn_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mRegisterDialog != null && mRegisterDialog.isShowing()) {
+                    mRegisterDialog.dismiss();
+                }
+            }
+        });
 
         ButterKnife.bind(viewActivity, this);
         ButterKnife.bind(viewDialog, view);
@@ -186,7 +197,6 @@ public class FingerActivity extends BaseActivity implements IFingerView {
                 @Override
                 public void run() {
                     mAdapter.updateData();
-
                 }
             });
         } else if (requestType == FinalString.READ_FINGER) {
@@ -208,7 +218,9 @@ public class FingerActivity extends BaseActivity implements IFingerView {
 
         Log.e(TAG, "onReadFailed: " + result);
         dissmissDialog();
-        showToast(this, "操作失败: " + result);
+        if (requestType != FinalString.FINGER_REGISTER) {
+            showToast(this, "操作失败: " + result);
+        }
     }
 
     @Override
@@ -255,7 +267,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         }
 
         @Override
-        public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // 实例化展示的view
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.finger_list_item, parent, false);
             // 实例化viewHolder
@@ -263,7 +275,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         }
 
         @Override
-        public void onBindViewHolder(MyAdapter.ViewHolder holder, final int position) {
+        public void onBindViewHolder(ViewHolder holder, final int position) {
             //监听点击事件,判断当前fingerLinearlayout有没有录入指纹
             // if(isFingerUsable){ } 若录入,弹框询问是否delete
             // else{ } 若未录入,弹出开始录制指纹,可选择停止录制
@@ -271,8 +283,8 @@ public class FingerActivity extends BaseActivity implements IFingerView {
                 @Override
                 public void onClick(View view) {
 
-                    final StringBuilder ps = new StringBuilder(String.valueOf(position + 1));
-                    ps.insert(0, "0");
+                    StringBuilder ps = new StringBuilder(String.valueOf(position + 1));
+                    final String psString = ps.insert(0, "0").toString();
 
                     if (isFingerUse(position)) {
                         //已使用,弹出询问是否删除框
@@ -280,14 +292,14 @@ public class FingerActivity extends BaseActivity implements IFingerView {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 //请求删除
+                                mDeleteDialog.show();
                                 requestType = FinalString.FINGER_DELETE;
                                 mGetTime = TimesCalculator.getStringDate();
-                                commandDelete = getCommand(typeDelete, ps.toString());
+                                commandDelete = getCommand(typeDelete, psString);
                                 PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId)
                                         .doRequest(FingerActivity.this, mGetTime, requestType, commandDelete, FingerActivity.this);
                             }
                         });
-                        mDeleteDialog.show();
                     } else {
                         //未使用，开始录制
                         mRegisterDialog.show();
@@ -313,7 +325,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         //判断finger是否使用
         boolean isFingerUse(int fingerNo) {
             //"00010", fingerNo = 1. 则查询"0 0010"中的第一位是否等于1 ，不等于则未使用
-            return fingerUsable.charAt(fingerNo) == 1;
+            return fingerUsable.charAt(fingerNo) == '1';
         }
 
         @Override

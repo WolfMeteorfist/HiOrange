@@ -6,7 +6,7 @@ package com.yuanshi.hiorange.fragment;
 
 public interface ILocationView {
 
-    void getGPSSucceed(String result, String lat, String lng,String cmdTime);
+    void getGPSSucceed(String result, String lat, String lng, String cmdTime);
 
     void getGPSFailed(String result);
 

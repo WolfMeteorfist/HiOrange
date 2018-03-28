@@ -10,6 +10,8 @@ import com.yuanshi.hiorange.activity.IUnbindView;
 import com.yuanshi.hiorange.fragment.ILocationView;
 import com.yuanshi.hiorange.util.FinalString;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
  * @author Zyc
  * @date 2018/2/26
