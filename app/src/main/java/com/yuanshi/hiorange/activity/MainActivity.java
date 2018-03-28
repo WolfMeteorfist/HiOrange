@@ -5,8 +5,10 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +27,7 @@ import com.yuanshi.hiorange.fragment.BoxFragment;
 import com.yuanshi.hiorange.fragment.ControllerFragment;
 import com.yuanshi.hiorange.fragment.LocationFragment;
 import com.yuanshi.hiorange.fragment.SettingFragment;
+import com.yuanshi.hiorange.receiver.NetworkStateReceiver;
 import com.yuanshi.hiorange.util.BottomNavigationViewHelper;
 import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.MySharedPreference;
@@ -40,6 +43,7 @@ public class MainActivity extends BaseActivity {
     private String phoneNumber;
     private String passWord;
     private String boxId;
+    private NetworkStateReceiver mNetworkStateReceiver;
 
     private enum FragmentTYPE {
         BOX,
@@ -139,6 +143,10 @@ public class MainActivity extends BaseActivity {
         MyApplication.getInstance().addActivity(this);
         initView(savedInstanceState);
         setDefaultFragment();
+        mNetworkStateReceiver = new NetworkStateReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(mNetworkStateReceiver, intentFilter);
 
     }
 
@@ -248,4 +256,10 @@ public class MainActivity extends BaseActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MyApplication.getInstance().removeActivitys(this);
+        unregisterReceiver(mNetworkStateReceiver);
+    }
 }
