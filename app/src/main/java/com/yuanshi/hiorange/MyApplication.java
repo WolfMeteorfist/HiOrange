@@ -21,16 +21,11 @@ public class MyApplication extends Application {
 
     private List<Activity> mActivityList = new ArrayList<>();
     private static MyApplication application = null;
-    private NetworkStateReceiver mNetworkStateReceiver;
 
     @Override
     public void onCreate() {
         super.onCreate();
         application = this;
-        mNetworkStateReceiver = new NetworkStateReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(mNetworkStateReceiver, intentFilter);
     }
 
     public static MyApplication getInstance() {
@@ -41,10 +36,9 @@ public class MyApplication extends Application {
         mActivityList.add(activity);
     }
 
-    public void cleanActivitys() {
-        for (Activity mActivity :
-                mActivityList) {
-            mActivity.finish();
+    public void removeActivitys(Activity activity) {
+        if (mActivityList.size() > 0) {
+            mActivityList.remove(activity);
         }
     }
 
@@ -53,12 +47,6 @@ public class MyApplication extends Application {
                 mActivityList) {
             mActivity.finish();
         }
-        if (mNetworkStateReceiver != null) {
-            unregisterReceiver(mNetworkStateReceiver);
-
-        }
-        System.exit(0);
     }
-
 
 }

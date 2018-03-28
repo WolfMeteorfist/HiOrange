@@ -60,6 +60,7 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
         ButterKnife.bind(this);
+        MyApplication.getInstance().addActivity(this);
         getWindow().setStatusBarColor(getResources().getColor(R.color.statue_bar));
         mContext = this;
         initView();
