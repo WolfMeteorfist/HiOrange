@@ -2,12 +2,15 @@ package com.yuanshi.hiorange.model;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
 import com.yuanshi.hiorange.activity.IAddBoxView;
 import com.yuanshi.hiorange.activity.IFingerView;
 import com.yuanshi.hiorange.activity.ILoginView;
+import com.yuanshi.hiorange.activity.IMainView;
 import com.yuanshi.hiorange.activity.IRegisterView;
 import com.yuanshi.hiorange.activity.IUnbindView;
 import com.yuanshi.hiorange.activity.IVoiceView;
+import com.yuanshi.hiorange.bean.BoxInfo;
 import com.yuanshi.hiorange.fragment.IBoxView;
 import com.yuanshi.hiorange.fragment.ILocationView;
 import com.yuanshi.hiorange.util.Codec;
@@ -96,8 +99,10 @@ public class ResultRequest implements IResultModel {
     public void setCommand(String command) {
         mCommand = command;
         mSetPresenter = PresenterFactory.createReadOrSetBoxPresenter(mPhoneNumber, mBoxId, mCommand);
+        mGetInfoPresenter = PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId);
 
     }
+
 
     @Override
     public void executeLoginTask(final JSONObject mJSONObject, final ILoginView mILoginView) {
@@ -130,8 +135,9 @@ public class ResultRequest implements IResultModel {
         });
     }
 
+
     /**
-     * 获取信息
+     * 获取并请求信息
      *
      * @param mContext    调用类的上下文
      * @param mJSONObject json参数
@@ -140,7 +146,6 @@ public class ResultRequest implements IResultModel {
     @Override
     public void executeGetInfoTask(final Context mContext, final JSONObject mJSONObject, final Object mObjectView) {
 
-        mGetInfoPresenter = PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId);
 
         M_POOL_EXECUTOR.execute(new Runnable() {
 
@@ -490,6 +495,79 @@ public class ResultRequest implements IResultModel {
                     } else {
                         iUnbindView.unbindFailed(result);
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void excuteGetInfoAuto(final JSONObject mJSONObject, final Object mObjectView) {
+        M_POOL_EXECUTOR.execute(new Runnable() {
+
+            @Override
+            public void run() {
+                String result = sendPost(FinalString.URL, Codec.codec(mJSONObject.toString()));
+                JSONObject jsonObject;
+                try {
+                    jsonObject = new JSONObject(result);
+                    BoxInfo boxInfo = new Gson().fromJson(jsonObject.toString(), BoxInfo.class);
+
+                    //是否与服务器连接OK
+                    if (boxInfo.getError_code().equals(ERROR_OK)) {
+                        String cmdTime = boxInfo.getTime();
+                        long different = TimesCalculator.calculateSeconds(getTime, cmdTime);
+                        if (different < CMD_TIME_OUT) {
+                            //判断当前需要的类型
+                            String command = jsonObject.getString(FinalString.COMMAND);
+                            String type = command.substring(4, 6);
+                            String locked = "";
+
+                            switch (getType) {
+                                case FinalString.READ_BOX:
+                                    if (type.equals(Command.TYPE_READ_BOX)) {
+                                        //成功!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        ((IBoxView) (mObjectView)).onReadSucceed(result);
+                                    } else if (type.equals(Command.TYPE_BOX_ALARM)) {
+                                        if (command.substring(6, 8).equals("01")) {
+                                            //"01"箱子丢失
+                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已丢失");
+                                        } else if (command.substring(6, 8).equals("02")) {
+                                            //"02"箱子打开
+                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已打开");
+                                        }
+                                    }
+                                    break;
+                                case FinalString.BOX_MISS:
+                                    if (type.equals(Command.TYPE_BOX_ALARM)) {
+                                        if (command.substring(6, 8).equals("01")) {
+                                            //"01"箱子丢失
+                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已丢失");
+                                        } else if (command.substring(6, 8).equals("02")) {
+                                            //"02"箱子打开
+                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已打开");
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                        } else {
+                            //Cmd失效
+                            mSetPresenter.doRequest();
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    } else {
+                    }
+                    //是否请求超时，<则未超时
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

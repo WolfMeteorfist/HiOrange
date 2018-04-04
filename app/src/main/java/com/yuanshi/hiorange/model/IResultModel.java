@@ -74,5 +74,7 @@ public interface IResultModel {
 
     void executeUnbindBoxTask(JSONObject mJSONObject, IUnbindView iUnbindView);
 
+    void excuteGetInfoAuto(JSONObject mJSONObject, Object mObjectView);
+
 
 }
