@@ -7,6 +7,7 @@ import com.yuanshi.hiorange.activity.IAddBoxView;
 import com.yuanshi.hiorange.activity.ILoginView;
 import com.yuanshi.hiorange.activity.IRegisterView;
 import com.yuanshi.hiorange.activity.IUnbindView;
+import com.yuanshi.hiorange.bean.BoxMissingInfo;
 import com.yuanshi.hiorange.fragment.ILocationView;
 import com.yuanshi.hiorange.util.FinalString;
 
@@ -92,6 +93,17 @@ public class PresenterFactory {
         }
     }
 
+    public static class GetBoxMissInfoPresenter extends Presenter{
+
+        GetBoxMissInfoPresenter(String phoneNumber, String pwOrbox) {
+            super(phoneNumber, pwOrbox, FinalString.TYPE_GET_INFO);
+        }
+        public void doRequest(Context context, @NonNull String getTime, @NonNull int getType, String command, Object object) {
+            getBoxMiss(context, getTime, getType, command, object);
+        }
+
+    }
+
     public static class UnbindBoxPresenter extends Presenter {
 
         UnbindBoxPresenter(String phoneNumber, String pwOrbox) {
@@ -148,6 +160,8 @@ public class PresenterFactory {
         return new GetInfoPresenter(phoneNumber, boxId);
     }
 
+
+
     /**
      * 创建添加 要求上传箱子信息 执行者
      *
@@ -174,4 +188,7 @@ public class PresenterFactory {
         return new UnbindBoxPresenter(phoneNumber, boxId);
     }
 
+    public static GetBoxMissInfoPresenter createBoxMissingPresenter(String phoneNumber, String boxId) {
+        return new GetBoxMissInfoPresenter(phoneNumber, boxId);
+    }
 }
