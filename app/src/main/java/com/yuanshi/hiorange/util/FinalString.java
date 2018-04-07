@@ -39,8 +39,6 @@ public class FinalString {
     public static final String START_STATE = "start_state";
 
 
-
-
     //Presenter类型
     public static final int TYPE_LOGIN = 1;
     public static final int TYPE_REGISTER = 2;
@@ -61,5 +59,6 @@ public class FinalString {
     public static final int FINGER_REGISTER = 0x08;
     public static final int FINGER_DELETE = 0x09;
     public static final int READ_FINGER = 0x0A;
+    public static final int BOX_MISS = 0XB0;
 
 }

@@ -13,6 +13,7 @@ public class Command {
 //    public static final String TYPE_RUNNING_MODE = "07";
     public static final String TYPE_FINGER = "08";
     public static final String TYPE_BOX_INFO = "09";
+    public static final String TYPE_BOX_ALARM = "09";
 
     //VOICE
     public static final String VOICE_READ = "01";
@@ -35,7 +36,7 @@ public class Command {
 
         stringBuilder.append(lowByte).append(hightByte);
 
-        stringBuilder.insert(0,"5555");
+        stringBuilder.insert(0, "5555");
 
         return stringBuilder.toString();
     }
@@ -60,22 +61,19 @@ public class Command {
     }
 
 
-    private  static int CalcCRCModBus(byte cDataIn, int wCRCIn)
-    {
+    private static int CalcCRCModBus(byte cDataIn, int wCRCIn) {
         int wCheck = 0;
         int i;
 
         wCRCIn = wCRCIn ^ cDataIn;
 
 
-        for( i = 0; i < 8; i++)
-        {
+        for (i = 0; i < 8; i++) {
             wCheck = wCRCIn & 1;
             wCRCIn = wCRCIn >> 1;
             wCRCIn = wCRCIn & 0x7fff;
 
-            if(wCheck == 1)
-            {
+            if (wCheck == 1) {
                 wCRCIn = wCRCIn ^ 0xa001;
             }
             wCRCIn = wCRCIn & 0xffff;
@@ -84,8 +82,7 @@ public class Command {
         return wCRCIn;
     }
 
-    public static int CheckCRCModBus(byte[] pDataIn, int iLenIn)
-    {
+    public static int CheckCRCModBus(byte[] pDataIn, int iLenIn) {
         int wHi = 0;
         int wLo = 0;
         int wCRC;
@@ -93,8 +90,7 @@ public class Command {
 
         wCRC = 0xFFFF;
 
-        for (i = 0; i < iLenIn; i++)
-        {
+        for (i = 0; i < iLenIn; i++) {
             wCRC = CalcCRCModBus(pDataIn[i], wCRC);
         }
 

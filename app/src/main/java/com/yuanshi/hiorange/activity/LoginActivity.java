@@ -143,6 +143,10 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
             }
         });
 
+        mEtLoginPhoneNumber.setText(MySharedPreference.getString(this, FinalString.PHONE, ""));
+        mEtLoginPhoneNumber.setSelection(mEtLoginPhoneNumber.getText().length());
+        mEtLoginPassword.setText(MySharedPreference.getString(this, FinalString.PASSWORD, ""));
+
     }
 
     @OnClick({R.id.btn_login_login, R.id.btn_login_register, R.id.tv_login_forget_password, R.id.iv_login_phone_clean})
@@ -167,7 +171,7 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
                         //创建并执行登录执行者
                         PresenterFactory
                                 .createLoginPresenter(phoneNumber, passWord)
-                                .doRequest( this);
+                                .doRequest(this);
                     }
                 }
 

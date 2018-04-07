@@ -1,6 +1,7 @@
 package com.yuanshi.hiorange.activity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -35,7 +36,7 @@ import com.yuanshi.hiorange.util.MySharedPreference;
 /**
  * @author 大神愁
  */
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements IMainView{
 
 
     private ControllerFragment mControllerFragment;
@@ -44,6 +45,14 @@ public class MainActivity extends BaseActivity {
     private String passWord;
     private String boxId;
     private NetworkStateReceiver mNetworkStateReceiver;
+
+    @Override
+    public void showBoxDialog(String result) {
+        new AlertDialog.Builder(this)
+                .setMessage(result)
+                .setCancelable(true)
+                .create();
+    }
 
     private enum FragmentTYPE {
         BOX,
