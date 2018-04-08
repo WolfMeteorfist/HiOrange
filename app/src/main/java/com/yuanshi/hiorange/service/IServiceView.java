@@ -7,5 +7,5 @@ package com.yuanshi.hiorange.service;
 
 public interface IServiceView {
 
-    void showBoxDialog(String result);
+    void showBoxDialog(String result, String time);
 }

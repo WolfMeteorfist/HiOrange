@@ -190,11 +190,12 @@ public class BoxFragment extends Fragment implements IBoxView {
             switch (requestType) {
                 case FinalString.READ_BOX:
                     //获得的数据是箱子信息
-                    //5555  01  00  13  15.25  0.98  01  02  32F4
+                    //5555  01  00  14  15.25  098  01  02 12 32F4
                     final String weight = command.substring(10, 15);
                     final String percent = command.substring(15, 18);
                     final String closed = command.substring(18, 20);
                     final String locked = command.substring(20, 22);
+                    final String lifeTime = command.substring(22, 24);
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -202,7 +203,7 @@ public class BoxFragment extends Fragment implements IBoxView {
                                 mDialogGetInfo.dismiss();
                             }
                             mBoxviewBoxWeight.setValue(weight);
-                            mBoxviewBoxBattery.setValue("0");
+                            mBoxviewBoxBattery.setValue(lifeTime);
                             mBatteryViewBox.setPercent(percent);
                             if ("01".equals(closed)) {
                                 mBoxviewBoxClosed.setValue("开启");

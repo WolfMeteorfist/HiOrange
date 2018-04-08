@@ -28,6 +28,7 @@ import com.yuanshi.hiorange.fragment.ControllerFragment;
 import com.yuanshi.hiorange.fragment.LocationFragment;
 import com.yuanshi.hiorange.fragment.SettingFragment;
 import com.yuanshi.hiorange.receiver.NetworkStateReceiver;
+import com.yuanshi.hiorange.service.RequestService;
 import com.yuanshi.hiorange.util.BottomNavigationViewHelper;
 import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.MySharedPreference;
@@ -148,6 +149,8 @@ public class MainActivity extends BaseActivity {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(mNetworkStateReceiver, intentFilter);
 
+        Intent intent = new Intent(MainActivity.this, RequestService.class);
+        startService(intent);
     }
 
     @SuppressLint("ResourceType")

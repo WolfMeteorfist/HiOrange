@@ -523,16 +523,17 @@ public class ResultRequest implements IResultModel {
                             //判断当前需要的类型
                             String command = jsonObject.getString(FinalString.COMMAND);
                             String type = command.substring(4, 6);
+                            String time = jsonObject.getString(FinalString.TIME);
 
                             switch (getType) {
                                 case FinalString.BOX_MISS:
                                     if (type.equals(Command.TYPE_BOX_ALARM)) {
                                         if (command.substring(6, 8).equals("01")) {
                                             //"01"箱子丢失
-                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子已丢失");
+                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子丢失", time);
                                         } else if (command.substring(6, 8).equals("02")) {
                                             //"02"箱子打开
-                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子已打开");
+                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子已打开", time);
                                         }
                                     }
                                     break;

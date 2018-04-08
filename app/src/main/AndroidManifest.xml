@@ -27,6 +27,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <!-- 用于提高GPS定位速度 -->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
 
     <uses-permission android:name="android.permission.VIBRATE"/> <!-- 震动权限 -->
@@ -103,9 +104,25 @@
             android:name=".activity.UnbindActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            tools:ignore="InnerclassSeparator"/>
+            tools:ignore="InnerclassSeparator">
+            <intent-filter>
+                <action android:name="android.intent.action.SENDTO"/>
+                //data由两部分组成: mimeType和URI
+                //intent的uri可以通过代码中的setData设置,mimeType可以通过代码中的setType设置,同时设置用setDataAndType
+                //uri则由scheme、host、port、path | pathPattern | pathPrefix这4部分组成
+
+                <!--<scheme>://<host>:<port>/[<path>|<pathPrefix>|<pathPattern >]
+                content://com.wooyun.org:200/folder/etc-->
+                <data android:mimeType="image/jpeg"/>//MimeType指的是媒体类型
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.BoxMissingDialog"
+            android:theme="@style/MyDialogTheme"/>
 
         <service android:name="com.amap.api.location.APSService"/>
+        <service android:name=".service.RequestService"/>
     </application>
 
 
