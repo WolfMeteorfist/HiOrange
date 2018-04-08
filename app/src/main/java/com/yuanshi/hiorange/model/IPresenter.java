@@ -28,5 +28,7 @@ public interface IPresenter {
 
     void getInfo(Context context, String getTime, int getType, String command, Object objectView);
 
+    void getBoxMiss(Context context, String getTime, int getType, String command, Object objectView);
+
 
 }

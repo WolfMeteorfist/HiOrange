@@ -241,6 +241,33 @@ public class Presenter implements IPresenter {
         resultRequest.executeGetInfoTask(context, jsonObject, objectView);
     }
 
+    /**
+     * 获取终端箱子信息
+     *  @param context
+     * @param objectView 泛型*/
+    @Override
+    public void getBoxMiss(Context context, @NonNull String getTime, @NonNull int getType, String command, Object objectView) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+
+            jsonObject.put(FinalString.PHONE, mPhoneNumber);
+            jsonObject.put(FinalString.BOX_ID, mBoxId);
+            jsonObject.put(FinalString.ACT, "query");
+
+            String sign = getSign(jsonObject.toString());
+            jsonObject.put(FinalString.SIGN, sign);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ResultRequest resultRequest = new ResultRequest(context);
+        resultRequest.setGetTime(getTime);
+        resultRequest.setGetType(getType);
+        resultRequest.setCommand(command);
+        resultRequest.excuteGetInfoAuto(jsonObject, objectView);
+    }
+
     @Override
     public void getGPS(ILocationView iLocationView) {
         JSONObject jsonObject = new JSONObject();

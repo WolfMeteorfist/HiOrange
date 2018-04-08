@@ -1,8 +1,8 @@
 package com.yuanshi.hiorange.service;
 
+import android.app.AlertDialog;
 import android.app.IntentService;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -10,8 +10,10 @@ import android.support.annotation.Nullable;
  * Created by Administrator on 2018/4/4.
  */
 
-public class RequestService extends IntentService {
+public class RequestService extends IntentService  implements IServiceView {
 
+
+    private AlertDialog mAlertDialog;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -40,7 +42,7 @@ public class RequestService extends IntentService {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return new MyBinder();
+        return null;
     }
 
     @Override
@@ -55,12 +57,12 @@ public class RequestService extends IntentService {
 //            ;
     }
 
-
-    class MyBinder extends Binder {
-
-        public void stopRequest() {
-            RequestService.this.startRequest();
-        }
-
+    @Override
+    public void showBoxDialog(String result) {
+        mAlertDialog = new AlertDialog.Builder(this)
+                .setMessage(result)
+                .setCancelable(true)
+                .create();
     }
+
 }

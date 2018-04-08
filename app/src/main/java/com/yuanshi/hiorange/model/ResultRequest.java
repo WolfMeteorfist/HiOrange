@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.yuanshi.hiorange.activity.IAddBoxView;
 import com.yuanshi.hiorange.activity.IFingerView;
 import com.yuanshi.hiorange.activity.ILoginView;
-import com.yuanshi.hiorange.activity.IMainView;
+import com.yuanshi.hiorange.service.IServiceView;
 import com.yuanshi.hiorange.activity.IRegisterView;
 import com.yuanshi.hiorange.activity.IUnbindView;
 import com.yuanshi.hiorange.activity.IVoiceView;
@@ -523,31 +523,16 @@ public class ResultRequest implements IResultModel {
                             //判断当前需要的类型
                             String command = jsonObject.getString(FinalString.COMMAND);
                             String type = command.substring(4, 6);
-                            String locked = "";
 
                             switch (getType) {
-                                case FinalString.READ_BOX:
-                                    if (type.equals(Command.TYPE_READ_BOX)) {
-                                        //成功!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                        ((IBoxView) (mObjectView)).onReadSucceed(result);
-                                    } else if (type.equals(Command.TYPE_BOX_ALARM)) {
-                                        if (command.substring(6, 8).equals("01")) {
-                                            //"01"箱子丢失
-                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已丢失");
-                                        } else if (command.substring(6, 8).equals("02")) {
-                                            //"02"箱子打开
-                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已打开");
-                                        }
-                                    }
-                                    break;
                                 case FinalString.BOX_MISS:
                                     if (type.equals(Command.TYPE_BOX_ALARM)) {
                                         if (command.substring(6, 8).equals("01")) {
                                             //"01"箱子丢失
-                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已丢失");
+                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子已丢失");
                                         } else if (command.substring(6, 8).equals("02")) {
                                             //"02"箱子打开
-                                            ((IMainView) (mObjectView)).showBoxDialog("箱子已打开");
+                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子已打开");
                                         }
                                     }
                                     break;
@@ -555,19 +540,11 @@ public class ResultRequest implements IResultModel {
                                     break;
                             }
 
-                        } else {
-                            //Cmd失效
-                            mSetPresenter.doRequest();
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
                         }
 
                     } else {
+                    //error_msg nook
                     }
-                    //是否请求超时，<则未超时
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
