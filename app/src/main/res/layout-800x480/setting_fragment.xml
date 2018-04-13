@@ -17,14 +17,14 @@
             android:id="@+id/img_mine_head"
             android:layout_width="@dimen/head_image_radius"
             android:layout_height="@dimen/head_image_radius"
-            android:src="@mipmap/automan"/>
+            android:src="@drawable/logo"/>
 
         <TextView
             android:id="@+id/tv_mine_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="啃罐头鱼的浪趴猫"
+            android:text="HiOrange"
             android:textColor="@android:color/white"
             android:textSize="@dimen/toolbar_title"/>
 

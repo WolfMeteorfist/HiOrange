@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -149,6 +148,7 @@ public class MainActivity extends BaseActivity {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(mNetworkStateReceiver, intentFilter);
 
+        //启动服务
         Intent intent = new Intent(MainActivity.this, RequestService.class);
         startService(intent);
     }
@@ -214,7 +214,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Log.e("Zyc", "onActivityResult: " + requestCode + resultCode);
         if (requestCode == 1 && resultCode == UnbindActivity.UNBIND_RESULT_CODE_OK) {
             startActivities(LoginActivity.class, null);
             finish();
@@ -250,7 +249,7 @@ public class MainActivity extends BaseActivity {
             if ((curTime - mLastTime) < 2000) {
                 MyApplication.getInstance().exit();
             } else {
-                Toast.makeText(getApplicationContext(), "连续按两次退出程序", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.clicktwiceexit, Toast.LENGTH_SHORT).show();
             }
             mLastTime = curTime;
             return true;
@@ -264,5 +263,8 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         MyApplication.getInstance().removeActivitys(this);
         unregisterReceiver(mNetworkStateReceiver);
+        Intent intent = new Intent();
+        intent.setAction(RequestService.ACTION_STOP_SERVICE);
+        sendBroadcast(intent);
     }
 }

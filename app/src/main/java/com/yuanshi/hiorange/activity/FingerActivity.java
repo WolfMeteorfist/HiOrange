@@ -1,8 +1,7 @@
 package com.yuanshi.hiorange.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.yuanshi.hiorange.BaseActivity;
 import com.yuanshi.hiorange.R;
 import com.yuanshi.hiorange.model.PresenterFactory;
@@ -61,9 +62,9 @@ public class FingerActivity extends BaseActivity implements IFingerView {
     private String mPhoneNumber;
     private String mBoxId;
 
-    private AlertDialog mRegisterDialog;
-    private AlertDialog mDeleteDialog;
-    private AlertDialog mReadDialog;
+    private MaterialDialog mRegisterDialog;
+    private MaterialDialog mDeleteDialog;
+    private MaterialDialog mReadDialog;
     private MyAdapter mAdapter;
     private String mGetTime;
     private ThreadPoolExecutor mThreadPoolExecutor;
@@ -88,10 +89,10 @@ public class FingerActivity extends BaseActivity implements IFingerView {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.finger_activity);
-        mReadDialog = new AlertDialog.Builder(this)
-                .setMessage("获取指纹信息中")
-                .setCancelable(false)
-                .create();
+        mReadDialog = new MaterialDialog.Builder(this)
+                .content(R.string.GetFinger)
+                .cancelable(false)
+                .build();
         initData();
         initView();
     }
@@ -115,7 +116,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         ButterKnife.bind(viewActivity, this);
         ButterKnife.bind(viewDialog, view);
 
-        viewActivity.mTvTitle.setText("指纹管理");
+        viewActivity.mTvTitle.setText(R.string.Fingerprintmanagement);
 
         LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         viewActivity.mRecyclerView.setLayoutManager(manager);
@@ -124,20 +125,22 @@ public class FingerActivity extends BaseActivity implements IFingerView {
 
         //初始化两个dialog，其中删除的dialog还需要获取position
         //所以在点击的时候定义positiveButton并create
-        mRegisterDialog = new AlertDialog.Builder(this)
-                .setView(view)
-                .setCancelable(false)
-                .create();
+        mRegisterDialog = new MaterialDialog.Builder(this)
+                .customView(view, false)
+                .cancelable(false)
+                .build();
 
-        mDeleteDialog = new AlertDialog.Builder(this)
-                .setMessage("是否删除")
-                .setNegativeButton("否", new DialogInterface.OnClickListener() {
+        mDeleteDialog = new MaterialDialog.Builder(this)
+                .content(R.string.isDelete)
+                .negativeText(R.string.no)
+                .cancelable(false)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         mDeleteDialog.dismiss();
                     }
                 })
-                .setCancelable(false).create();
+                .build();
 
 
         //首次进入fingerActivity时跟服务器要数据
@@ -192,7 +195,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         Log.e(TAG, "onReadSucceed: " + result);
         dissmissDialog();
         if (requestType == FinalString.FINGER_DELETE) {
-            showToast(this, "删除成功");
+            showToast(this, getString(R.string.deleteSucceed));
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -219,7 +222,7 @@ public class FingerActivity extends BaseActivity implements IFingerView {
         Log.e(TAG, "onReadFailed: " + result);
         dissmissDialog();
         if (requestType != FinalString.FINGER_REGISTER) {
-            showToast(this, "操作失败: " + result);
+            showToast(this, getString(R.string.operateFailed) + result);
         }
     }
 
@@ -288,18 +291,23 @@ public class FingerActivity extends BaseActivity implements IFingerView {
 
                     if (isFingerUse(position)) {
                         //已使用,弹出询问是否删除框
-                        mDeleteDialog.setButton(DialogInterface.BUTTON_POSITIVE, "是", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //请求删除
-                                mDeleteDialog.show();
-                                requestType = FinalString.FINGER_DELETE;
-                                mGetTime = TimesCalculator.getStringDate();
-                                commandDelete = getCommand(typeDelete, psString);
-                                PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId)
-                                        .doRequest(FingerActivity.this, mGetTime, requestType, commandDelete, FingerActivity.this);
-                            }
-                        });
+                        mDeleteDialog = new MaterialDialog.Builder(FingerActivity.this)
+                                .content(R.string.isDelete)
+                                .negativeText(R.string.yes)
+                                .cancelable(false)
+                                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                                        requestType = FinalString.FINGER_DELETE;
+                                        mGetTime = TimesCalculator.getStringDate();
+                                        commandDelete = getCommand(typeDelete, psString);
+                                        PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId)
+                                                .doRequest(FingerActivity.this, mGetTime, requestType, commandDelete, FingerActivity.this);
+                                    }
+                                })
+                                .show();
+
                     } else {
                         //未使用，开始录制
                         mRegisterDialog.show();

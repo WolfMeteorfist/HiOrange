@@ -58,7 +58,7 @@ public class FinalString {
     public static final int FINGER_CANCEL = 0x07;
     public static final int FINGER_REGISTER = 0x08;
     public static final int FINGER_DELETE = 0x09;
-    public static final int READ_FINGER = 0x0A;
-    public static final int BOX_MISS = 0XB0;
+    public static final int READ_FINGER = 0x11;
+    public static final int BOX_MISS = 0X12;
 
 }

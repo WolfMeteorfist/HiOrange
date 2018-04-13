@@ -6,13 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.yuanshi.hiorange.R;
+import com.yuanshi.hiorange.activity.AlarmActivity;
 import com.yuanshi.hiorange.activity.FingerActivity;
 import com.yuanshi.hiorange.activity.MainActivity;
 import com.yuanshi.hiorange.activity.UnbindActivity;
@@ -90,6 +90,7 @@ public class SettingFragment extends Fragment {
             case R.id.ll_mine_about_app:
                 break;
             case R.id.ll_mine_alarm_info:
+                ((MainActivity) mActivity).startActivities(AlarmActivity.class, mBundle);
                 break;
             case R.id.ll_mine_finger:
                 ((MainActivity) mActivity).startActivities(FingerActivity.class, mBundle);
@@ -100,9 +101,9 @@ public class SettingFragment extends Fragment {
                 ((MainActivity) mActivity).startActivities(VoiceActivity.class, mBundle);
                 break;
             case R.id.ll_mine_unbinding:
-                Intent intent = new Intent(mActivity,UnbindActivity.class);
+                Intent intent = new Intent(mActivity, UnbindActivity.class);
                 intent.putExtras(mBundle);
-                mActivity.startActivityForResult(intent,1);
+                mActivity.startActivityForResult(intent, 1);
                 break;
             default:
                 break;
@@ -113,7 +114,6 @@ public class SettingFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.e(TAG, "onDestroyView: ");
         unbinder.unbind();
     }
 

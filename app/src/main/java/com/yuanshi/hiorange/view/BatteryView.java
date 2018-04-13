@@ -35,7 +35,7 @@ public class BatteryView extends View {
     private int mHeight;
 
     //初始值，改的话要一起改
-    private String mPercent = "连接";
+    private String mPercent = getContext().getString(R.string.connect);
     private int mSweep = 360;
 
     private int DEFALUT_WIDTH = 250;

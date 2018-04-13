@@ -1,52 +1,96 @@
 package com.yuanshi.hiorange.bean;
 
-/**
- * Created by Administrator on 2018/4/4.
- */
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class BoxInfo {
+public class BoxInfo implements Parcelable {
 
+    private String weight;
+    private String lifeTime;
+    private String isLocked;
+    private String isOpened;
+    private String percent;
 
-    /**
-     * error_code : 0
-     * error_msg : ok
-     * command : xxxxxxxx
-     */
-
-    private String error_code;
-    private String error_msg;
-    private String command;
-    private String time;
-
-    public String getError_code() {
-        return error_code;
+    public BoxInfo(String weight, String lifeTime, String isLocked, String isOpened, String percent) {
+        this.weight = weight;
+        this.lifeTime = lifeTime;
+        this.isLocked = isLocked;
+        this.isOpened = isOpened;
+        this.percent = percent;
     }
 
-    public void setError_code(String error_code) {
-        this.error_code = error_code;
+    public String getWeight() {
+        return weight;
     }
 
-    public String getError_msg() {
-        return error_msg;
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
-    public void setError_msg(String error_msg) {
-        this.error_msg = error_msg;
+    public String getLifeTime() {
+        return lifeTime;
     }
 
-    public String getCommand() {
-        return command;
+    public void setLifeTime(String lifeTime) {
+        this.lifeTime = lifeTime;
     }
 
-    public void setCommand(String command) {
-        this.command = command;
+    public String getIsLocked() {
+        return isLocked;
     }
 
-    public String getTime() {
-        return time;
+    public void setIsLocked(String isLocked) {
+        this.isLocked = isLocked;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public String getIsOpened() {
+        return isOpened;
     }
+
+    public void setIsOpened(String isOpened) {
+        this.isOpened = isOpened;
+    }
+
+    public String getPercent() {
+        return percent;
+    }
+
+    public void setPercent(String percent) {
+        this.percent = percent;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.weight);
+        dest.writeString(this.lifeTime);
+        dest.writeString(this.isLocked);
+        dest.writeString(this.isOpened);
+        dest.writeString(this.percent);
+    }
+
+    protected BoxInfo(Parcel in) {
+        this.weight = in.readString();
+        this.lifeTime = in.readString();
+        this.isLocked = in.readString();
+        this.isOpened = in.readString();
+        this.percent = in.readString();
+    }
+
+    public static final Creator<BoxInfo> CREATOR = new Creator<BoxInfo>() {
+        @Override
+        public BoxInfo createFromParcel(Parcel source) {
+            return new BoxInfo(source);
+        }
+
+        @Override
+        public BoxInfo[] newArray(int size) {
+            return new BoxInfo[size];
+        }
+    };
 }

@@ -21,7 +21,7 @@ public class BoxMissingInfo {
     }
 
     public List<String> getOpenTime() {
-        return openTime == null ? new LinkedList<String>() : missTime;
+        return openTime == null ? new LinkedList<String>() : openTime;
 
     }
 

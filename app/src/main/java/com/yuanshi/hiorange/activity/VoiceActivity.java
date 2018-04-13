@@ -1,6 +1,5 @@
 package com.yuanshi.hiorange.activity;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.suke.widget.SwitchButton;
 import com.yuanshi.hiorange.BaseActivity;
 import com.yuanshi.hiorange.R;
@@ -53,6 +53,16 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     SwitchButton mBtnVoicePowerOff;
     @BindView(R.id.tv_save)
     TextView mTvSave;
+    @BindView(R.id.btn_bt_power_off)
+    SwitchButton mBtnBtPowerOff;
+    @BindView(R.id.btn_help_power_off)
+    SwitchButton mBtnHelpPowerOff;
+    @BindView(R.id.btn_lean_power_off)
+    SwitchButton mBtnLeanPowerOff;
+    @BindView(R.id.btn_box_lost_power_off)
+    SwitchButton mBtnBoxLostPowerOff;
+    @BindView(R.id.btn_lock_power_off)
+    SwitchButton mBtnLockPowerOff;
 
     private String mPhoneNumber;
     private String mPassWord;
@@ -60,18 +70,23 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     private final String commandGetVoice = Command.getCommand(Command.TYPE_VOICE, Command.VOICE_READ, "00", "");
     private PresenterFactory.GetInfoPresenter mGetVoiceInfoPresenter;
     private PresenterFactory.ReadOrSetBoxPresenter mSetVoicePresenter;
-    private AlertDialog mDialog;
+    private MaterialDialog mDialog;
     private String commandSetVoice;
 
     private String getTime;
     private int requestType;
 
     private final String OBSTACLE = "1";
-    private final String LOST = "2";
+    private final String FOLLOWLOST = "2";
     private final String POWER_ON = "3";
     private final String CONTROLL = "4";
     private final String FOLLOW = "5";
     private final String POWER_OFF = "6";
+    private final String BT = "7";
+    private final String HELP = "8";
+    private final String LEAN = "9";
+    private final String BOXLOST = "10";
+    private final String LOCK = "11";
 
     private String obCheck = "02";
     private String lsCheck = "02";
@@ -79,6 +94,11 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     private String ctCheck = "02";
     private String flCheck = "02";
     private String pfCheck = "02";
+    private String btCheck = "02";
+    private String helpCheck = "02";
+    private String leanCheck = "02";
+    private String boxLostCheck = "02";
+    private String lockCheck = "02";
 
 
     @Override
@@ -98,19 +118,26 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
             mBoxId = getIntent().getExtras().getString(FinalString.BOX_ID);
         }
 
-        mTbTitle.setText("声音提醒设置");
+        mTbTitle.setText(R.string.Soundreminder);
         mTvSave.setVisibility(View.VISIBLE);
 
         getTime = TimesCalculator.getStringDate();
-        mDialog = new AlertDialog.Builder(this).setMessage("获取箱子设置中").setCancelable(false).create();
+        mDialog = new MaterialDialog.Builder(this).title(R.string.GetAlarmSettings).cancelable(false).build();
         mDialog.show();
         mGetVoiceInfoPresenter = PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId);
+
         mBtnVoiceObstacle.setTag(OBSTACLE);
-        mBtnVoiceLost.setTag(LOST);
+        mBtnVoiceLost.setTag(FOLLOWLOST);
         mBtnVoicePowerOn.setTag(POWER_ON);
         mBtnVoiceControll.setTag(CONTROLL);
         mBtnVoiceFollow.setTag(FOLLOW);
         mBtnVoicePowerOff.setTag(POWER_OFF);
+
+        mBtnBtPowerOff.setTag(BT);
+        mBtnHelpPowerOff.setTag(HELP);
+        mBtnLeanPowerOff.setTag(LEAN);
+        mBtnBoxLostPowerOff.setTag(BOXLOST);
+        mBtnLockPowerOff.setTag(LOCK);
 
         mBtnVoiceObstacle.setOnCheckedChangeListener(new MyCheckedChangeListener());
         mBtnVoiceLost.setOnCheckedChangeListener(new MyCheckedChangeListener());
@@ -118,6 +145,12 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
         mBtnVoiceControll.setOnCheckedChangeListener(new MyCheckedChangeListener());
         mBtnVoiceFollow.setOnCheckedChangeListener(new MyCheckedChangeListener());
         mBtnVoicePowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+
+        mBtnBtPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        mBtnHelpPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        mBtnLeanPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        mBtnBoxLostPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        mBtnLockPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
     }
 
     @Override
@@ -134,7 +167,7 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
                 case OBSTACLE:
                     obCheck = isChecked ? "01" : "02";
                     break;
-                case LOST:
+                case FOLLOWLOST:
                     lsCheck = isChecked ? "01" : "02";
                     break;
                 case POWER_ON:
@@ -149,6 +182,22 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
                 case POWER_OFF:
                     pfCheck = isChecked ? "01" : "02";
                     break;
+                case BT:
+                    btCheck = isChecked ? "01" : "02";
+                    break;
+                case HELP:
+                    helpCheck = isChecked ? "01" : "02";
+                    break;
+                case LEAN:
+                    leanCheck = isChecked ? "01" : "02";
+                    break;
+                case BOXLOST:
+                    boxLostCheck = isChecked ? "01" : "02";
+                    break;
+                case LOCK:
+                    lockCheck = isChecked ? "01" : "02";
+                    break;
+
                 default:
                     break;
             }
@@ -161,11 +210,12 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
         switch (view.getId()) {
             case R.id.tv_save:
                 StringBuilder builder = new StringBuilder();
-                builder.append(obCheck).append(lsCheck).append(poCheck).append(ctCheck).append(flCheck).append(pfCheck);
-                commandSetVoice = Command.getCommand(Command.TYPE_VOICE, Command.VOICE_READ, "12", builder.toString());
+                builder.append(obCheck).append(lsCheck).append(poCheck).append(ctCheck).append(flCheck).append(pfCheck)
+                        .append(btCheck).append(helpCheck).append(leanCheck).append(boxLostCheck).append(lockCheck);
+                commandSetVoice = Command.getCommand(Command.TYPE_VOICE, Command.VOICE_SET, "22", builder.toString());
                 requestType = FinalString.SET_VOICE;
                 getTime = TimesCalculator.getStringDate();
-                mDialog.setMessage("保存中");
+                mDialog.setContent(R.string.saving);
                 mDialog.show();
                 mGetVoiceInfoPresenter.doRequest(this, getTime, requestType, commandSetVoice, this);
                 break;
@@ -192,9 +242,9 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     public void onReadSucceed(String result) {
 
         if (requestType == FinalString.SET_VOICE) {
-            showToast(this, "保存成功");
+            showToast(this, getString(R.string.saveSucceed));
         } else if (requestType == FinalString.READ_VOICE) {
-            showToast(this, "获取成功");
+            showToast(this, getString(R.string.getSucceed));
         }
 
         dismissDialog();
@@ -203,17 +253,14 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
         try {
             jsonObject = new JSONObject(result);
             StringBuilder command = new StringBuilder(jsonObject.getString(FinalString.COMMAND));
-            commandSetVoice = command.substring(10, 22);
+            commandSetVoice = command.substring(10, 32);
             MySharedPreference.saveString(this, FinalString.COMMAND, commandSetVoice);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    mBtnVoiceObstacle.setChecked(commandSetVoice.substring(0, 2).equals("01"));
-                    mBtnVoiceLost.setChecked(commandSetVoice.substring(2, 4).equals("01"));
-                    mBtnVoicePowerOn.setChecked(commandSetVoice.substring(4, 6).equals("01"));
-                    mBtnVoiceControll.setChecked(commandSetVoice.substring(6, 8).equals("01"));
-                    mBtnVoiceFollow.setChecked(commandSetVoice.substring(8, 10).equals("01"));
-                    mBtnVoicePowerOff.setChecked(commandSetVoice.substring(10, 12).equals("01"));
+                    setCheckFromCommand(commandSetVoice);
+
+
                 }
             });
         } catch (JSONException e) {
@@ -227,23 +274,32 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
         dismissDialog();
 
         if (requestType == FinalString.SET_VOICE) {
-            showToast(this, "保存失败");
+            showToast(this, getString(R.string.SaveFailed));
         } else if (requestType == FinalString.READ_VOICE) {
-            showToast(this, "获取失败,取得最近数据");
+            showToast(this, getString(R.string.GetFailed));
         }
 
         commandSetVoice = MySharedPreference.getString(this, FinalString.COMMAND, "020202020202");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                mBtnVoiceObstacle.setChecked(commandSetVoice.substring(0, 2).equals("01"));
-                mBtnVoiceLost.setChecked(commandSetVoice.substring(2, 4).equals("01"));
-                mBtnVoicePowerOn.setChecked(commandSetVoice.substring(4, 6).equals("01"));
-                mBtnVoiceControll.setChecked(commandSetVoice.substring(6, 8).equals("01"));
-                mBtnVoiceFollow.setChecked(commandSetVoice.substring(8, 10).equals("01"));
-                mBtnVoicePowerOff.setChecked(commandSetVoice.substring(10, 12).equals("01"));
+                setCheckFromCommand(commandSetVoice);
             }
         });
+    }
+
+    private void setCheckFromCommand(String command) {
+        mBtnVoiceObstacle.setChecked(command.substring(0, 2).equals("01"));
+        mBtnVoiceLost.setChecked(command.substring(2, 4).equals("01"));
+        mBtnVoicePowerOn.setChecked(command.substring(4, 6).equals("01"));
+        mBtnVoiceControll.setChecked(command.substring(6, 8).equals("01"));
+        mBtnVoiceFollow.setChecked(command.substring(8, 10).equals("01"));
+        mBtnVoicePowerOff.setChecked(command.substring(10, 12).equals("01"));
+
+        mBtnBtPowerOff.setChecked(command.substring(12, 14).equals("01"));
+        mBtnHelpPowerOff.setChecked(command.substring(14, 16).equals("01"));
+        mBtnLeanPowerOff.setChecked(command.substring(16, 18).equals("01"));
+        mBtnBoxLostPowerOff.setChecked(command.substring(18, 20).equals("01"));
+        mBtnLockPowerOff.setChecked(command.substring(20, 22).equals("01"));
     }
 }

@@ -7,11 +7,8 @@ import com.yuanshi.hiorange.activity.IAddBoxView;
 import com.yuanshi.hiorange.activity.ILoginView;
 import com.yuanshi.hiorange.activity.IRegisterView;
 import com.yuanshi.hiorange.activity.IUnbindView;
-import com.yuanshi.hiorange.bean.BoxMissingInfo;
 import com.yuanshi.hiorange.fragment.ILocationView;
 import com.yuanshi.hiorange.util.FinalString;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author Zyc
@@ -99,7 +96,7 @@ public class PresenterFactory {
             super(phoneNumber, pwOrbox, FinalString.TYPE_GET_INFO);
         }
         public void doRequest(Context context, @NonNull String getTime, @NonNull int getType, String command, Object object) {
-            getBoxMiss(context, getTime, getType, command, object);
+            getBoxMiss(context, getTime, getType, command,object);
         }
 
     }

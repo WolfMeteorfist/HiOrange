@@ -2,27 +2,36 @@ package com.yuanshi.hiorange.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.yuanshi.hiorange.R;
+import com.yuanshi.hiorange.activity.MainActivity;
+import com.yuanshi.hiorange.bean.BoxInfo;
 import com.yuanshi.hiorange.model.PresenterFactory;
 import com.yuanshi.hiorange.util.Command;
 import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.TimesCalculator;
 import com.yuanshi.hiorange.view.BatteryView;
 import com.yuanshi.hiorange.view.BoxInfoView;
-import com.yuanshi.hiorange.activity.MainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.lang.ref.WeakReference;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,15 +46,16 @@ import butterknife.Unbinder;
 public class BoxFragment extends Fragment implements IBoxView {
 
     private static final String TAG = "BoxFragment";
+    public static final String INFO_UPDATE_ACTION = "com.yuanshi.hiorange.action.infoupdate";
     protected Activity mActivity;
     @BindView(R.id.batteryView_box)
-    BatteryView mBatteryViewBox;
+    BatteryView mBatteryView;
     @BindView(R.id.boxview_box_weight)
     BoxInfoView mBoxviewBoxWeight;
     @BindView(R.id.boxview_box_battery)
-    BoxInfoView mBoxviewBoxBattery;
+    BoxInfoView mBoxviewBoxLifeTime;
     @BindView(R.id.boxview_box_closed)
-    BoxInfoView mBoxviewBoxClosed;
+    BoxInfoView mBoxviewBoxOpened;
     @BindView(R.id.boxview_box_locking)
     BoxInfoView mBoxviewBoxLocked;
     @BindView(R.id.btn_box_unlocking)
@@ -56,27 +66,32 @@ public class BoxFragment extends Fragment implements IBoxView {
     private String mPhoneNumber;
     private String mBoxId;
 
-    private AlertDialog mDialogGetInfo;
-    private AlertDialog mDialogLock;
+    private MaterialDialog mDialogGetInfo;
+    private MaterialDialog mDialogLock;
     private int requestType;
-
-    //网上获取数据失效
-    private final long DISABLE_TIME = 60 * 1000;
-    //数据申请超时
-    private final long TIME_OUT = 10 * 1000;
+    private boolean isRegisterReceiver = false;
 
     private final String commandReadInfo = Command.getCommand(Command.TYPE_READ_BOX, "00", "00", "");
     private final String commandUnLock = Command.getCommand(Command.TYPE_LOCK, "02", "02", "02");
     private final String commandLock = Command.getCommand(Command.TYPE_LOCK, "02", "02", "01");
     private final String commandLockedState = Command.getCommand(Command.TYPE_LOCK, "01", "00", "");
     private PresenterFactory.GetInfoPresenter mGetInfoPresenter;
-    private PresenterFactory.ReadOrSetBoxPresenter mLockedStatePresenter;
-    private PresenterFactory.ReadOrSetBoxPresenter mReadInfoPresenter;
-    private PresenterFactory.ReadOrSetBoxPresenter mLockPresenter;
-    private PresenterFactory.ReadOrSetBoxPresenter mUnLockPresenter;
+
+    private MyHandler mMyHandler = new MyHandler(this);
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(INFO_UPDATE_ACTION)) {
+                Bundle bundle = Objects.requireNonNull(Objects.requireNonNull(intent.getExtras()).getBundle("boxInfoBundle"));
+                Message msg = mMyHandler.obtainMessage();
+                msg.what = 1;
+                msg.setData(bundle);
+                mMyHandler.sendMessage(msg);
+            }
+        }
+    };
 
     private String getTime;
-
 
     @Override
     public void onAttach(Context context) {
@@ -91,6 +106,32 @@ public class BoxFragment extends Fragment implements IBoxView {
             mPhoneNumber = ((MainActivity) mActivity).getPhoneNumber();
             mBoxId = ((MainActivity) mActivity).getBoxId();
         }
+
+        IntentFilter intentFilter = new IntentFilter(INFO_UPDATE_ACTION);
+        mActivity.registerReceiver(mReceiver, intentFilter);
+        isRegisterReceiver = true;
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.e(TAG, "onHiddenChanged: " + hidden);
+
+        IntentFilter intentFilter = new IntentFilter(INFO_UPDATE_ACTION);
+        if (!hidden) {
+            mActivity.registerReceiver(mReceiver, intentFilter);
+            isRegisterReceiver = true;
+        } else {
+            if (isRegisterReceiver) {
+                mActivity.unregisterReceiver(mReceiver);
+                isRegisterReceiver = false;
+            }
+        }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
     }
 
     @Nullable
@@ -108,26 +149,22 @@ public class BoxFragment extends Fragment implements IBoxView {
      */
     private void init() {
 
-        mUnLockPresenter = PresenterFactory.createReadOrSetBoxPresenter(mPhoneNumber, mBoxId, commandUnLock);
-
-        mLockPresenter = PresenterFactory.createReadOrSetBoxPresenter(mPhoneNumber, mBoxId, commandLock);
-
-        mReadInfoPresenter = PresenterFactory.createReadOrSetBoxPresenter(mPhoneNumber, mBoxId, commandReadInfo);
-
-        mLockedStatePresenter = PresenterFactory.createReadOrSetBoxPresenter(mPhoneNumber, mBoxId, commandLockedState);
-
         mGetInfoPresenter = PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId);
 
         requestType = FinalString.READ_BOX;
 
         //开始获取Info之前记录当前时间
         getTime = TimesCalculator.getStringDate();
-        mDialogGetInfo = new AlertDialog
-                .Builder(mActivity).setMessage("箱子信息获取中").setCancelable(false).create();
+        mDialogGetInfo = new MaterialDialog.Builder(mActivity)
+                .content(R.string.getBoxInfo)
+                .progress(true,0)
+                .progressIndeterminateStyle(true)
+                .build();
 
         mDialogGetInfo.show();
 
         mGetInfoPresenter.doRequest(mActivity, getTime, requestType, commandReadInfo, this);
+
 
     }
 
@@ -146,13 +183,20 @@ public class BoxFragment extends Fragment implements IBoxView {
                 if (((MainActivity) mActivity).isNetWork()) {
                     getTime = TimesCalculator.getStringDate();
                     if (mBtnBoxUnlocking.getText().equals(getString(R.string.box_info_unlock))) {
-                        mDialogLock = new AlertDialog.Builder(mActivity).setMessage("远程解锁中").setCancelable(false).create();
+                        mDialogLock = new MaterialDialog.Builder(mActivity)
+                                .content(R.string.unlocking)
+                                .progress(true,0)
+                                .progressIndeterminateStyle(true)
+                                .build();
                         mDialogLock.show();
                         requestType = FinalString.SET_UNLOCK;
                         mGetInfoPresenter.doRequest(mActivity, getTime, requestType, commandUnLock, this);
                     } else {
-
-                        mDialogLock = new AlertDialog.Builder(mActivity).setMessage("远程上锁中").setCancelable(false).create();
+                        mDialogLock = new MaterialDialog.Builder(mActivity)
+                                .content(R.string.locking)
+                                .progress(true,0)
+                                .progressIndeterminateStyle(true)
+                                .build();
                         requestType = FinalString.SET_LOCK;
                         mDialogLock.show();
                         mGetInfoPresenter.doRequest(mActivity, getTime, requestType, commandLock, this);
@@ -168,7 +212,6 @@ public class BoxFragment extends Fragment implements IBoxView {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.e(TAG, "onDestroyView: ");
         unbinder.unbind();
     }
 
@@ -179,7 +222,6 @@ public class BoxFragment extends Fragment implements IBoxView {
 
     @Override
     public void onReadSucceed(String result) {
-        Log.e(TAG, "onReadSucceed: " + result);
         try {
             JSONObject jsonObject = new JSONObject(result);
             StringBuilder command = new StringBuilder(jsonObject.getString(FinalString.COMMAND));
@@ -195,7 +237,7 @@ public class BoxFragment extends Fragment implements IBoxView {
                     final String percent = command.substring(15, 18);
                     final String closed = command.substring(18, 20);
                     final String locked = command.substring(20, 22);
-                    final String lifeTime = command.substring(22, 24);
+                    final String lifeTime = String.valueOf(Integer.valueOf(command.substring(22, 24)));
                     mActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -203,15 +245,16 @@ public class BoxFragment extends Fragment implements IBoxView {
                                 mDialogGetInfo.dismiss();
                             }
                             mBoxviewBoxWeight.setValue(weight);
-                            mBoxviewBoxBattery.setValue(lifeTime);
-                            mBatteryViewBox.setPercent(percent);
+                            mBoxviewBoxLifeTime.setValue(lifeTime);
+                            mBatteryView.setPercent(percent);
+                            mBtnBoxUnlocking.setEnabled(true);
+
                             if ("01".equals(closed)) {
-                                mBoxviewBoxClosed.setValue("开启");
+                                mBoxviewBoxOpened.setValue(getString(R.string.opened));
                             } else if ("02".equals(closed)) {
-                                mBoxviewBoxClosed.setValue("关闭");
+                                mBoxviewBoxOpened.setValue(getString(R.string.closed));
                             }
 
-                            mBtnBoxUnlocking.setEnabled(true);
                             if ("01".equals(locked)) {
                                 mBoxviewBoxLocked.setValue(getString(R.string.box_info_lock));
                                 mBtnBoxUnlocking.setText(getString(R.string.box_info_unlock));
@@ -264,7 +307,7 @@ public class BoxFragment extends Fragment implements IBoxView {
 
     @Override
     public void onReadFailed(String result) {
-        ((MainActivity) mActivity).showToast(mActivity, result);
+        ((MainActivity) mActivity).showToast(mActivity, getString(R.string.checkboxstate));
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -282,5 +325,54 @@ public class BoxFragment extends Fragment implements IBoxView {
         });
     }
 
+    static class MyHandler extends Handler {
+
+        private WeakReference<BoxFragment> mBoxFragmentWeakReference;
+        private BoxFragment mFragment;
+
+
+        public MyHandler(BoxFragment boxFragment) {
+            mBoxFragmentWeakReference = new WeakReference<>(boxFragment);
+        }
+
+        @Override
+
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    Bundle bundle = msg.getData();
+                    BoxInfo boxInfo = bundle.getParcelable("boxInfo");
+                    mFragment = mBoxFragmentWeakReference.get();
+                    mFragment.mBoxviewBoxWeight.setValue(boxInfo != null ? boxInfo.getWeight() : "");
+                    mFragment.mBoxviewBoxLifeTime.setValue(boxInfo != null ? boxInfo.getLifeTime() : "");
+
+                    mFragment.mBatteryView.setPercent(boxInfo != null ? boxInfo.getPercent() : "");
+                    mFragment.mBtnBoxUnlocking.setEnabled(true);
+
+                    if (boxInfo != null) {
+                        if ("01".equals(boxInfo.getIsOpened())) {
+                            mFragment.mBoxviewBoxOpened.setValue("开启");
+                        } else if ("02".equals(boxInfo.getIsOpened())) {
+                            mFragment.mBoxviewBoxOpened.setValue("关闭");
+                        }
+                    }
+
+                    if (boxInfo != null) {
+                        if ("01".equals(boxInfo.getIsLocked())) {
+                            mFragment.mBoxviewBoxLocked.setValue(mFragment.getString(R.string.box_info_lock));
+                            mFragment.mBtnBoxUnlocking.setText(mFragment.getString(R.string.box_info_unlock));
+                        } else if ("02".equals(boxInfo.getIsLocked())) {
+                            mFragment.mBoxviewBoxLocked.setValue(mFragment.getString(R.string.box_info_unlock));
+                            mFragment.mBtnBoxUnlocking.setText(mFragment.getString(R.string.box_info_lock));
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+    }
 
 }

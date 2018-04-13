@@ -101,7 +101,7 @@
         android:layout_marginStart="14dp"
         android:layout_marginTop="46dp"
         android:background="@drawable/login_button"
-        android:text="立即注册"
+        android:text="@string/registernow"
         android:textColor="#FFFFFF"
         android:textSize="18sp"/>
 

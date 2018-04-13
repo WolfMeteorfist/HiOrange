@@ -1,6 +1,5 @@
 package com.yuanshi.hiorange.activity;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.yuanshi.hiorange.BaseActivity;
 import com.yuanshi.hiorange.R;
 import com.yuanshi.hiorange.model.PresenterFactory;
@@ -41,7 +41,7 @@ public class RegisterActivity extends BaseActivity implements IRegisterView {
     EditText mEtRegisterPasswordConfirm;
     private String mPassWord;
     private String mPassWordConfirm;
-    private AlertDialog mAlertDialog;
+    private MaterialDialog mAlertDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,8 +54,7 @@ public class RegisterActivity extends BaseActivity implements IRegisterView {
 
     private void initView() {
 
-        mAlertDialog = new AlertDialog.Builder(this).create();
-        mAlertDialog.setMessage("注册中...");
+        mAlertDialog = new MaterialDialog.Builder(this).content(R.string.registing).build();
 
         mTbTitle.setText(R.string.user_register);
 

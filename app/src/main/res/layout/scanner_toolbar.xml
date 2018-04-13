@@ -22,7 +22,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="扫描二维码绑定"
+            android:text="@string/scanQrcode"
             android:textColor="#FFFFFF"
             android:textSize="24sp"/>
 

@@ -20,6 +20,6 @@
         android:layout_below="@+id/finger_image_dialog"
         android:background="@drawable/register_button"
         android:layout_centerHorizontal="true"
-        android:text="取消"/>
+        android:text="@string/cancel"/>
 
 </RelativeLayout>

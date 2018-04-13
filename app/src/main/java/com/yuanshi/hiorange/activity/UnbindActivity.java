@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.yuanshi.hiorange.BaseActivity;
 import com.yuanshi.hiorange.R;
 import com.yuanshi.hiorange.model.PresenterFactory;
+import com.yuanshi.hiorange.util.FileUtils;
 import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.MySharedPreference;
 
@@ -88,6 +89,7 @@ public class UnbindActivity extends BaseActivity implements IUnbindView {
     @Override
     public void unbindSucceed(String result) {
         showToast(this, "解绑成功");
+        FileUtils.deleteBoxInfoFile();
         setResult(UNBIND_RESULT_CODE_OK);
         MySharedPreference.cleanSharedPreferences(this);
         this.runOnUiThread(new Runnable() {

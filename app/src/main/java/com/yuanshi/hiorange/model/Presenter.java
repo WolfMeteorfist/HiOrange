@@ -45,6 +45,10 @@ public class Presenter implements IPresenter {
      */
     Presenter(String phoneNumber, String pwOrbox, int type) {
         switch (type) {
+            case FinalString.TYPE_GPS:
+                mPhoneNumber = phoneNumber;
+                mBoxId = pwOrbox;
+                break;
             case FinalString.TYPE_LOGIN:
                 mPhoneNumber = phoneNumber;
                 mPassWord = pwOrbox;
@@ -86,10 +90,6 @@ public class Presenter implements IPresenter {
                 mPhoneNumber = phoneNumber;
                 mBoxId = pwOrbox;
                 mCommand = vcOrCmd;
-                break;
-            case FinalString.TYPE_GPS:
-                mPhoneNumber = phoneNumber;
-                mBoxId = pwOrbox;
                 break;
             default:
                 break;
@@ -246,7 +246,7 @@ public class Presenter implements IPresenter {
      *  @param context
      * @param objectView 泛型*/
     @Override
-    public void getBoxMiss(Context context, @NonNull String getTime, @NonNull int getType, String command, Object objectView) {
+    public void getBoxMiss(Context context, @NonNull String getTime, @NonNull int getType, String command,Object objectView) {
         JSONObject jsonObject = new JSONObject();
         try {
 

@@ -2,7 +2,6 @@ package com.yuanshi.hiorange.view;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
@@ -36,8 +35,6 @@ public class MyImageView extends android.support.v7.widget.AppCompatImageView {
         Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         circlePaint.setStrokeWidth(2);
         circlePaint.setStyle(Paint.Style.STROKE);
-        circlePaint.setColor( Color.parseColor("#FFFFFF"));
-        canvas.drawCircle(getWidth() / 2, getHeight() / 2, (getWidth() / 2)-1, circlePaint);
 
     }
 }

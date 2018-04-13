@@ -79,7 +79,7 @@ public class LocationFragment extends Fragment implements AMapLocationListener, 
     private String mPhoneNumber;
     private String mBoxId;
     private AlertDialog mGpsDialog;
-    private final long TIME_OUT = 10 * 1000;
+    private final long TIME_OUT = 60 * 1000;
     private final long DISABLE_TIME = 60 * 1000;
     private String getTime;
     private PresenterFactory.GetGPSPresenter mGetGPSPresenter;
@@ -125,7 +125,7 @@ public class LocationFragment extends Fragment implements AMapLocationListener, 
             case R.id.iv_location_box:
                 mGpsDialog.show();
                 getTime = TimesCalculator.getStringDate();
-                mGetGPSPresenter.doRequest( this);
+                mGetGPSPresenter.doRequest(this);
                 break;
             case R.id.iv_location_location:
 
@@ -146,11 +146,11 @@ public class LocationFragment extends Fragment implements AMapLocationListener, 
     private void initMarker() {
 
         List<Marker> marker = mAMap.getMapScreenMarkers();
-        for (Marker marker1 : marker) {
-            marker1.remove();
+        if (marker.size()>1){
+            marker.remove(1);
         }
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_icon_box);
+        Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.location_icon_box);
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(new LatLng(boxLat, boxLng));
@@ -164,8 +164,10 @@ public class LocationFragment extends Fragment implements AMapLocationListener, 
 
 
         //获取箱子位置坐标
-        mAMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(22.590000, 113.992922)));
+        LatLng latLng = new LatLng(boxLat, boxLng);
+        mAMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         Marker markerBox = mAMap.addMarker(markerOptions);
+        markerBox.setTitle("11");
 
         Animation animation = new RotateAnimation(markerBox.getRotateAngle(), markerBox.getRotateAngle() + 360, 0, 0, 0);
         long duration = 500L;
@@ -206,7 +208,7 @@ public class LocationFragment extends Fragment implements AMapLocationListener, 
         mMyLocationStyle.showMyLocation(true);
         mMyLocationStyle.strokeColor(Color.TRANSPARENT);
 //        自定义icon
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_icon_normal);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_icon_pressed);
         mMyLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromBitmap(bitmap));
         mAMap.setMyLocationStyle(mMyLocationStyle);
         mAMap.setMyLocationEnabled(true);
@@ -349,6 +351,7 @@ public class LocationFragment extends Fragment implements AMapLocationListener, 
 
     @Override
     public void getGPSFailed(String result) {
+        ((MainActivity) mActivity).showToast(mActivity, result);
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

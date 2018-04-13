@@ -1,6 +1,7 @@
 package com.yuanshi.hiorange.model;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.yuanshi.hiorange.activity.IAddBoxView;
 import com.yuanshi.hiorange.activity.ILoginView;
@@ -22,13 +23,14 @@ public interface IPresenter {
 
     void unbindBox(IUnbindView iUnbindView);
 
+
+    void getBoxMiss(Context context, @NonNull String getTime, @NonNull int getType, String command, Object objectView);
+
     void getGPS(ILocationView iLocationView);
 
     void readOrSetBox();
 
     void getInfo(Context context, String getTime, int getType, String command, Object objectView);
-
-    void getBoxMiss(Context context, String getTime, int getType, String command, Object objectView);
 
 
 }

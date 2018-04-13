@@ -1,18 +1,23 @@
 package com.yuanshi.hiorange.service;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
-import android.os.Handler;
+import android.content.IntentFilter;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yuanshi.hiorange.activity.BoxMissingDialog;
+import com.yuanshi.hiorange.bean.BoxInfo;
 import com.yuanshi.hiorange.bean.BoxMissingInfo;
+import com.yuanshi.hiorange.fragment.BoxFragment;
 import com.yuanshi.hiorange.model.PresenterFactory;
 import com.yuanshi.hiorange.util.Command;
+import com.yuanshi.hiorange.util.FileUtils;
 import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.MySharedPreference;
 import com.yuanshi.hiorange.util.TimesCalculator;
@@ -36,25 +41,32 @@ public class RequestService extends Service implements IServiceView {
 
 
     private static final String TAG = "RequestService";
+    public static final String ACTION_STOP_SERVICE = "com.yuanshi.hiorange.action.stopservice";
+    private final String commandReadInfo = Command.getCommand(Command.TYPE_READ_BOX, "00", "00", "");
 
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-    private final String commandReadInfo = Command.getCommand(Command.TYPE_READ_BOX, "00", "00", "");
     private ScheduledFuture<?> mTest;
-    private Handler mHandler = new Handler();
-    private int count;
 
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate: ");
         super.onCreate();
-
+        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction() == ACTION_STOP_SERVICE) {
+                    stopSelf();
+                    unregisterReceiver(this);
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_STOP_SERVICE);
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        count = 0;
-        Log.e(TAG, "onStartCommand: ");
 
         mTest = executor.scheduleAtFixedRate(
                 new Runnable() {
@@ -64,14 +76,15 @@ public class RequestService extends Service implements IServiceView {
 
                         String mBoxId;
                         String mPhone;
-                        Log.e(TAG, "run: " + count++);
                         mPhone = MySharedPreference.getString(RequestService.this, FinalString.PHONE, "");
                         mBoxId = MySharedPreference.getString(RequestService.this, FinalString.BOX_ID, "");
                         PresenterFactory.createBoxMissingPresenter(mPhone, mBoxId)
                                 .doRequest(RequestService.this, TimesCalculator.getStringDate(), FinalString.BOX_MISS, commandReadInfo, RequestService.this);
+                        PresenterFactory.createBoxMissingPresenter(mPhone, mBoxId)
+                                .doRequest(RequestService.this, TimesCalculator.getStringDate(), FinalString.READ_BOX, commandReadInfo, RequestService.this);
                     }
 
-                }, 0, 2000, TimeUnit.MILLISECONDS);
+                }, 0, 2, TimeUnit.SECONDS);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -81,6 +94,7 @@ public class RequestService extends Service implements IServiceView {
             mTest.cancel(true);
             mTest = null;
         }
+
         super.onDestroy();
     }
 
@@ -89,6 +103,7 @@ public class RequestService extends Service implements IServiceView {
     public IBinder onBind(Intent intent) {
         return null;
     }
+
 
     @Override
     public void showBoxDialog(String result, String time) {
@@ -105,15 +120,26 @@ public class RequestService extends Service implements IServiceView {
         startActivity(intent);
     }
 
-    private boolean writeToFile(String time, boolean isMiss) {
-        String fileName = "boxInfo.txt";
+    @Override
+    public void updateBoxInfo(BoxInfo boxInfo) {
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("boxInfo", boxInfo);
+        intent.putExtra("boxInfoBundle", bundle);
+        intent.setAction(BoxFragment.INFO_UPDATE_ACTION);
+        Log.e(TAG, "发送updateBox广播 ");
+        sendBroadcast(intent);
+    }
+
+    private void writeToFile(String time, boolean isMiss) {
         StringBuilder sb = new StringBuilder();
         BoxMissingInfo boxMissingInfo;
+        FileOutputStream fos = null;
         try {
-            File file = new File(Environment.getDataDirectory(), fileName);
+            File file = FileUtils.getBoxInfoPath();
             if (file.exists()) {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                String line = "";
+                String line;
                 while (((line = reader.readLine()) != null)) {
                     sb.append(line);
                 }
@@ -131,7 +157,8 @@ public class RequestService extends Service implements IServiceView {
 
                 reader.close();
             } else {
-                file.mkdirs();
+                file.createNewFile();
+//                file.
                 boxMissingInfo = new BoxMissingInfo();
                 if (isMiss) {
                     boxMissingInfo.getMissTime().add(time);
@@ -141,13 +168,22 @@ public class RequestService extends Service implements IServiceView {
                 sb.append(new Gson().toJson(boxMissingInfo));
             }
 
-            FileOutputStream fos = new FileOutputStream(file, false);
+            fos = new FileOutputStream(file, false);
             fos.write(sb.toString().getBytes("UTF-8"));
-            fos.close();
         } catch (IOException e) {
+            FileUtils.deleteBoxInfoFile();
+            writeToFile(time, isMiss);
             e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return true;
     }
+
 
 }

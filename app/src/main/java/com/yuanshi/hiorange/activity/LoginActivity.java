@@ -1,6 +1,5 @@
 package com.yuanshi.hiorange.activity;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,10 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.yuanshi.hiorange.MyApplication;
 import com.yuanshi.hiorange.R;
 import com.yuanshi.hiorange.model.PresenterFactory;
 import com.yuanshi.hiorange.util.CheckPermissionsActivity;
+import com.yuanshi.hiorange.util.FileUtils;
 import com.yuanshi.hiorange.util.FinalString;
 import com.yuanshi.hiorange.util.MySharedPreference;
 
@@ -53,7 +54,7 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
     ImageView mIvLoginPassswordClean;
     public static Context mContext;
     private long mLastTime = 0;
-    private AlertDialog dialog;
+    private MaterialDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +71,11 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
         final Animation animCleanMiss = AnimationUtils.loadAnimation(this, R.anim.clean_icon_scale_down);
         final Animation animCleanShow = AnimationUtils.loadAnimation(this, R.anim.clean_icon_scale_up);
 
-        dialog = new AlertDialog.Builder(mContext).setMessage("正在登陆").create();
+
+        dialog = new MaterialDialog.Builder(mContext)
+                .content(R.string.Loginnow)
+                .progress(true, 0)
+                .build();
 
         String phoneString = MySharedPreference.getString(mContext, FinalString.PHONE, "");
         String passWordString = MySharedPreference.getString(mContext, FinalString.PASSWORD, "");
@@ -149,7 +154,8 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
 
     }
 
-    @OnClick({R.id.btn_login_login, R.id.btn_login_register, R.id.tv_login_forget_password, R.id.iv_login_phone_clean})
+    @OnClick({R.id.btn_login_login, R.id.btn_login_register, R.id.iv_login_passsword_clean,
+            R.id.tv_login_forget_password, R.id.iv_login_phone_clean})
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_login_login:
@@ -172,6 +178,7 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
                         PresenterFactory
                                 .createLoginPresenter(phoneNumber, passWord)
                                 .doRequest(this);
+
                     }
                 }
 
@@ -190,15 +197,14 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
                 mEtLoginPassword.setText("");
                 break;
             case R.id.tv_login_forget_password:
-                startActivities(MainActivity.class, null);
                 if (isNetWork()) {
-
                 }
                 break;
             default:
                 break;
         }
     }
+
 
     /**
      * 登录成功后操作
@@ -207,6 +213,9 @@ public class LoginActivity extends CheckPermissionsActivity implements ILoginVie
      */
     @Override
     public void onLoginSucceed(String result) {
+        if (!MySharedPreference.getString(this, FinalString.PHONE, "").equals(mEtLoginPhoneNumber.getText().toString())) {
+            FileUtils.deleteBoxInfoFile();
+        }
         MySharedPreference.saveString(this, FinalString.PHONE, mEtLoginPhoneNumber.getText().toString());
         MySharedPreference.saveString(this, FinalString.PASSWORD, mEtLoginPassword.getText().toString());
         MySharedPreference.saveString(this, FinalString.BOX_ID, result);

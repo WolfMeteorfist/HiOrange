@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <uses-permission android:name="android.permission.LOCATION_HARDWARE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!-- 需要运行时注册的权限 -->
     <!-- 用于进行网络定位 -->
@@ -39,16 +40,13 @@
         android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="64c66583e5563975926a1676e0868597"/>
-
-        <meta-data
-            android:name="MTA_CHANNEL"
-            android:value="${MTA_CHANNEL_VALUE}"/>
 
         <activity
             android:name=".zxing.activity.CaptureActivity"
@@ -58,13 +56,13 @@
             android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator">
         </activity>
         <activity
             android:name=".activity.LoginActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
@@ -74,35 +72,35 @@
         </activity>
         <activity
             android:name=".activity.InputIdActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator">
         </activity>
         <activity
             android:name=".activity.FingerActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator">
         </activity>
         <activity
             android:name=".activity.AddBoxActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator"/>
         <activity
             android:name=".activity.RegisterActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator"/>
 
         <activity
             android:name=".activity.VoiceActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator"/>
         <activity
             android:name=".activity.UnbindActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
@@ -120,6 +118,11 @@
         <activity
             android:name=".activity.BoxMissingDialog"
             android:theme="@style/MyDialogTheme"/>
+
+        <activity
+            android:name=".activity.AlarmActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
         <service android:name="com.amap.api.location.APSService"/>
         <service android:name=".service.RequestService"/>

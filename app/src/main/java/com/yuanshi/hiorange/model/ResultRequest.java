@@ -1,16 +1,18 @@
 package com.yuanshi.hiorange.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.yuanshi.hiorange.activity.IAddBoxView;
 import com.yuanshi.hiorange.activity.IFingerView;
 import com.yuanshi.hiorange.activity.ILoginView;
+import com.yuanshi.hiorange.bean.BoxInfo;
 import com.yuanshi.hiorange.service.IServiceView;
 import com.yuanshi.hiorange.activity.IRegisterView;
 import com.yuanshi.hiorange.activity.IUnbindView;
 import com.yuanshi.hiorange.activity.IVoiceView;
-import com.yuanshi.hiorange.bean.BoxInfo;
+import com.yuanshi.hiorange.bean.BoxCommand;
 import com.yuanshi.hiorange.fragment.IBoxView;
 import com.yuanshi.hiorange.fragment.ILocationView;
 import com.yuanshi.hiorange.util.Codec;
@@ -227,6 +229,7 @@ public class ResultRequest implements IResultModel {
                                         }
                                         break;
                                     case FinalString.SET_VOICE:
+
                                         if (type.equals(Command.TYPE_VOICE)
                                                 && mCommand.length() > 22
                                                 && command.length() > 22
@@ -453,21 +456,22 @@ public class ResultRequest implements IResultModel {
         M_POOL_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
-                String result = sendPost(FinalString.URL, Codec.codec(mJSONObject.toString()));
                 JSONObject jsonObject;
+                String result = sendPost(FinalString.URL, Codec.codec(mJSONObject.toString()));
                 try {
                     jsonObject = new JSONObject(result);
                     final String errorCode = jsonObject.getString(FinalString.ERROR_CODE);
-                    final JSONObject gpsJson = jsonObject.getJSONObject(FinalString.GPS);
-                    final String lat = gpsJson.getString("lat");
-                    final String lng = gpsJson.getString("lng");
-                    final String time = gpsJson.getString("time");
-                    if ((ERROR_OK).equals(errorCode)) {
-                        iLocationView.getGPSSucceed(result, lat, lng, time);
+                    if (ERROR_OK.equals(errorCode)) {
+                        final JSONObject gpsJson = jsonObject.getJSONObject(FinalString.GPS);
+                        final double lat = gpsJson.getDouble("lat");
+                        final double lng = gpsJson.getDouble("lng");
+                        final String time = gpsJson.getString("time");
+                        iLocationView.getGPSSucceed(String.valueOf(result), String.valueOf(lat), String.valueOf(lng), time);
                     } else {
                         iLocationView.getGPSFailed(result);
                     }
                 } catch (JSONException e) {
+                    iLocationView.getGPSFailed(e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -502,6 +506,7 @@ public class ResultRequest implements IResultModel {
         });
     }
 
+    private static final String TAG = "ResultRequest";
 
     @Override
     public void excuteGetInfoAuto(final JSONObject mJSONObject, final Object mObjectView) {
@@ -513,38 +518,61 @@ public class ResultRequest implements IResultModel {
                 JSONObject jsonObject;
                 try {
                     jsonObject = new JSONObject(result);
-                    BoxInfo boxInfo = new Gson().fromJson(jsonObject.toString(), BoxInfo.class);
+                    BoxCommand boxCommand = new Gson().fromJson(jsonObject.toString(), BoxCommand.class);
 
                     //是否与服务器连接OK
-                    if (boxInfo.getError_code().equals(ERROR_OK)) {
-                        String cmdTime = boxInfo.getTime();
+                    if (boxCommand.getError_code().equals(ERROR_OK)) {
+                        String cmdTime = boxCommand.getTime();
                         long different = TimesCalculator.calculateSeconds(getTime, cmdTime);
                         if (different < CMD_TIME_OUT) {
                             //判断当前需要的类型
                             String command = jsonObject.getString(FinalString.COMMAND);
                             String type = command.substring(4, 6);
                             String time = jsonObject.getString(FinalString.TIME);
+                            Log.e(TAG, "command" + command);
+
 
                             switch (getType) {
                                 case FinalString.BOX_MISS:
                                     if (type.equals(Command.TYPE_BOX_ALARM)) {
                                         if (command.substring(6, 8).equals("01")) {
-                                            //"01"箱子丢失
-                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子丢失", time);
-                                        } else if (command.substring(6, 8).equals("02")) {
-                                            //"02"箱子打开
+                                            //"01"箱子打开
                                             ((IServiceView) (mObjectView)).showBoxDialog("箱子已打开", time);
+                                        } else if (command.substring(6, 8).equals("02")) {
+                                            //"02"箱子丢失
+                                            ((IServiceView) (mObjectView)).showBoxDialog("箱子丢失", time);
                                         }
                                     }
+                                    break;
+                                case FinalString.READ_BOX:
+                                    Log.e(TAG, "type: " + "read_box");
+                                    if (type.equals(Command.TYPE_READ_BOX)) {
+                                        final String weight = command.substring(10, 15);
+                                        final String lifeTime = String.valueOf(Integer.valueOf(command.substring(22, 24)));
+                                        final String locked = command.substring(20, 22);
+                                        final String closed = command.substring(18, 20);
+                                        final String percent = command.substring(15, 18);
+                                        BoxInfo boxInfo = new BoxInfo(weight, lifeTime, locked, closed, percent);
+                                        //成功!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                        ((IServiceView) (mObjectView)).updateBoxInfo(boxInfo);
+                                    } else {
+                                        //重新获取箱子信息
+                                        mSetPresenter.doRequest();
+                                    }
+
                                     break;
                                 default:
                                     break;
                             }
 
+                        } else {
+                            if (getType == FinalString.READ_BOX) {
+                                mSetPresenter.doRequest();
+                            }
                         }
 
                     } else {
-                    //error_msg nook
+                        //error_msg nook
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

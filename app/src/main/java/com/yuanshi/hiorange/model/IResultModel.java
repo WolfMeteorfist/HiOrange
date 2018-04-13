@@ -51,8 +51,7 @@ public interface IResultModel {
     /**
      * 创建ThreadPoolExecutor线程池对象，并初始化该对象的各种参数
      */
-    ThreadPoolExecutor M_POOL_EXECUTOR = new ThreadPoolExecutor(corePoolSize, 5, KEEP_ACTIVE_TIME, TIME_UNIT, workQueue);
-
+    ThreadPoolExecutor M_POOL_EXECUTOR = new ThreadPoolExecutor(corePoolSize, 10, KEEP_ACTIVE_TIME, TIME_UNIT, workQueue, new ThreadPoolExecutor.AbortPolicy());
 
     /**
      * Login界面
