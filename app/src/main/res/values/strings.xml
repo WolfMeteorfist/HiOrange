@@ -98,5 +98,6 @@
     <string name="no">否</string>
     <string name="yes">是</string>
     <string name="registing">注册中...</string>
+    <string name="reconnect">点击重新加载</string>
 
 </resources>

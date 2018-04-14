@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -11,9 +12,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.Button;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -36,6 +39,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
 import butterknife.Unbinder;
 
 /**
@@ -48,20 +52,34 @@ public class BoxFragment extends Fragment implements IBoxView {
     private static final String TAG = "BoxFragment";
     public static final String INFO_UPDATE_ACTION = "com.yuanshi.hiorange.action.infoupdate";
     protected Activity mActivity;
-    @BindView(R.id.batteryView_box)
-    BatteryView mBatteryView;
-    @BindView(R.id.boxview_box_weight)
-    BoxInfoView mBoxviewBoxWeight;
-    @BindView(R.id.boxview_box_battery)
-    BoxInfoView mBoxviewBoxLifeTime;
-    @BindView(R.id.boxview_box_closed)
-    BoxInfoView mBoxviewBoxOpened;
-    @BindView(R.id.boxview_box_locking)
-    BoxInfoView mBoxviewBoxLocked;
-    @BindView(R.id.btn_box_unlocking)
-    Button mBtnBoxUnlocking;
-    Unbinder unbinder;
 
+    Unbinder unbinder;
+    @BindView(R.id.view_stub_box)
+    ViewStub mViewStub;
+
+    private MyStubView mMyStubView;
+    private boolean isShow = false;
+
+    public class MyStubView {
+        @BindView(R.id.batteryView_box)
+        BatteryView mBatteryView;
+        @BindView(R.id.boxview_box_weight)
+        BoxInfoView mBoxviewBoxWeight;
+        @BindView(R.id.boxview_box_battery)
+        BoxInfoView mBoxviewBoxLifeTime;
+        @BindView(R.id.boxview_box_closed)
+        BoxInfoView mBoxviewBoxOpened;
+        @BindView(R.id.boxview_box_locking)
+        BoxInfoView mBoxviewBoxLocked;
+        @BindView(R.id.btn_box_unlocking)
+        Button mBtnBoxUnlocking;
+
+        public MyStubView(View view) {
+            ButterKnife.bind(this, view);
+        }
+
+
+    }
 
     private String mPhoneNumber;
     private String mBoxId;
@@ -137,7 +155,7 @@ public class BoxFragment extends Fragment implements IBoxView {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.box_fragment, null);
+        View view = inflater.inflate(R.layout.box_idel_fragment, null);
         unbinder = ButterKnife.bind(this, view);
         init();
 
@@ -157,7 +175,18 @@ public class BoxFragment extends Fragment implements IBoxView {
         getTime = TimesCalculator.getStringDate();
         mDialogGetInfo = new MaterialDialog.Builder(mActivity)
                 .content(R.string.getBoxInfo)
-                .progress(true,0)
+                .cancelable(false)
+                .progress(true, 0)
+                .keyListener(new DialogInterface.OnKeyListener() {
+                    @Override
+                    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            dialog.dismiss();
+                            return true;
+                        }
+                        return false;
+                    }
+                })
                 .progressIndeterminateStyle(true)
                 .build();
 
@@ -168,10 +197,11 @@ public class BoxFragment extends Fragment implements IBoxView {
 
     }
 
-    @OnClick({R.id.batteryView_box, R.id.btn_box_unlocking})
+    @OnClick({R.id.btn_reconnect_box, R.id.batteryView_box, R.id.btn_box_unlocking})
+    @Optional
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.batteryView_box:
+            case R.id.btn_reconnect_box:
                 if (((MainActivity) mActivity).isNetWork()) {
                     getTime = TimesCalculator.getStringDate();
                     mDialogGetInfo.show();
@@ -179,13 +209,21 @@ public class BoxFragment extends Fragment implements IBoxView {
                     mGetInfoPresenter.doRequest(mActivity, getTime, requestType, commandReadInfo, this);
                 }
                 break;
+            case R.id.batteryView_box:
+//                if (((MainActivity) mActivity).isNetWork()) {
+//                    getTime = TimesCalculator.getStringDate();
+//                    mDialogGetInfo.show();
+//                    requestType = FinalString.READ_BOX;
+//                    mGetInfoPresenter.doRequest(mActivity, getTime, requestType, commandReadInfo, this);
+//                }
+                break;
             case R.id.btn_box_unlocking:
                 if (((MainActivity) mActivity).isNetWork()) {
                     getTime = TimesCalculator.getStringDate();
-                    if (mBtnBoxUnlocking.getText().equals(getString(R.string.box_info_unlock))) {
+                    if (mMyStubView.mBtnBoxUnlocking.getText().equals(getString(R.string.box_info_unlock))) {
                         mDialogLock = new MaterialDialog.Builder(mActivity)
                                 .content(R.string.unlocking)
-                                .progress(true,0)
+                                .progress(true, 0)
                                 .progressIndeterminateStyle(true)
                                 .build();
                         mDialogLock.show();
@@ -194,7 +232,7 @@ public class BoxFragment extends Fragment implements IBoxView {
                     } else {
                         mDialogLock = new MaterialDialog.Builder(mActivity)
                                 .content(R.string.locking)
-                                .progress(true,0)
+                                .progress(true, 0)
                                 .progressIndeterminateStyle(true)
                                 .build();
                         requestType = FinalString.SET_LOCK;
@@ -222,15 +260,24 @@ public class BoxFragment extends Fragment implements IBoxView {
 
     @Override
     public void onReadSucceed(String result) {
+
+        if (!isVisible()) {
+            return;
+        }
+
+        isShow = true;
+        View viewStub = mViewStub.inflate();
+        mMyStubView = new MyStubView(viewStub);
+
         try {
             JSONObject jsonObject = new JSONObject(result);
             StringBuilder command = new StringBuilder(jsonObject.getString(FinalString.COMMAND));
-            //当获取时长大于十秒后，停止获取，提醒超时
 
             String type = command.substring(4, 6);
             //判断 得到数据类型 与 当前申请数据类型  是否一致
             switch (requestType) {
                 case FinalString.READ_BOX:
+
                     //获得的数据是箱子信息
                     //5555  01  00  14  15.25  098  01  02 12 32F4
                     final String weight = command.substring(10, 15);
@@ -244,26 +291,27 @@ public class BoxFragment extends Fragment implements IBoxView {
                             if (mDialogGetInfo != null && mDialogGetInfo.isShowing()) {
                                 mDialogGetInfo.dismiss();
                             }
-                            mBoxviewBoxWeight.setValue(weight);
-                            mBoxviewBoxLifeTime.setValue(lifeTime);
-                            mBatteryView.setPercent(percent);
-                            mBtnBoxUnlocking.setEnabled(true);
+                            mMyStubView.mBoxviewBoxWeight.setValue(weight);
+                            mMyStubView.mBoxviewBoxLifeTime.setValue(lifeTime);
+                            mMyStubView.mBatteryView.setPercent(percent);
+                            mMyStubView.mBtnBoxUnlocking.setEnabled(true);
 
                             if ("01".equals(closed)) {
-                                mBoxviewBoxOpened.setValue(getString(R.string.opened));
+                                mMyStubView.mBoxviewBoxOpened.setValue(getString(R.string.opened));
                             } else if ("02".equals(closed)) {
-                                mBoxviewBoxOpened.setValue(getString(R.string.closed));
+                                mMyStubView.mBoxviewBoxOpened.setValue(getString(R.string.closed));
                             }
 
                             if ("01".equals(locked)) {
-                                mBoxviewBoxLocked.setValue(getString(R.string.box_info_lock));
-                                mBtnBoxUnlocking.setText(getString(R.string.box_info_unlock));
+                                mMyStubView.mBoxviewBoxLocked.setValue(getString(R.string.box_info_lock));
+                                mMyStubView.mBtnBoxUnlocking.setText(getString(R.string.box_info_unlock));
                             } else if ("02".equals(locked)) {
-                                mBoxviewBoxLocked.setValue(getString(R.string.box_info_unlock));
-                                mBtnBoxUnlocking.setText(getString(R.string.box_info_lock));
+                                mMyStubView.mBoxviewBoxLocked.setValue(getString(R.string.box_info_unlock));
+                                mMyStubView.mBtnBoxUnlocking.setText(getString(R.string.box_info_lock));
                             }
                         }
                     });
+
 
                     break;
 
@@ -274,8 +322,8 @@ public class BoxFragment extends Fragment implements IBoxView {
                             if (mDialogLock != null && mDialogLock.isShowing()) {
                                 mDialogLock.dismiss();
                             }
-                            mBoxviewBoxLocked.setValue(getString(R.string.box_info_lock));
-                            mBtnBoxUnlocking.setText(getString(R.string.box_info_unlock));
+                            mMyStubView.mBoxviewBoxLocked.setValue(getString(R.string.box_info_lock));
+                            mMyStubView.mBtnBoxUnlocking.setText(getString(R.string.box_info_unlock));
                         }
                     });
 
@@ -288,8 +336,8 @@ public class BoxFragment extends Fragment implements IBoxView {
                             if (mDialogLock != null && mDialogLock.isShowing()) {
                                 mDialogLock.dismiss();
                             }
-                            mBoxviewBoxLocked.setValue(getString(R.string.box_info_unlock));
-                            mBtnBoxUnlocking.setText(getString(R.string.box_info_lock));
+                            mMyStubView.mBoxviewBoxLocked.setValue(getString(R.string.box_info_unlock));
+                            mMyStubView.mBtnBoxUnlocking.setText(getString(R.string.box_info_lock));
                         }
                     });
 
@@ -307,6 +355,9 @@ public class BoxFragment extends Fragment implements IBoxView {
 
     @Override
     public void onReadFailed(String result) {
+        if (!isVisible()) {
+            return;
+        }
         ((MainActivity) mActivity).showToast(mActivity, getString(R.string.checkboxstate));
         mActivity.runOnUiThread(new Runnable() {
             @Override
@@ -344,27 +395,27 @@ public class BoxFragment extends Fragment implements IBoxView {
                     Bundle bundle = msg.getData();
                     BoxInfo boxInfo = bundle.getParcelable("boxInfo");
                     mFragment = mBoxFragmentWeakReference.get();
-                    mFragment.mBoxviewBoxWeight.setValue(boxInfo != null ? boxInfo.getWeight() : "");
-                    mFragment.mBoxviewBoxLifeTime.setValue(boxInfo != null ? boxInfo.getLifeTime() : "");
+                    mFragment.mMyStubView.mBoxviewBoxWeight.setValue(boxInfo != null ? boxInfo.getWeight() : "");
+                    mFragment.mMyStubView.mBoxviewBoxLifeTime.setValue(boxInfo != null ? boxInfo.getLifeTime() : "");
 
-                    mFragment.mBatteryView.setPercent(boxInfo != null ? boxInfo.getPercent() : "");
-                    mFragment.mBtnBoxUnlocking.setEnabled(true);
+                    mFragment.mMyStubView.mBatteryView.setPercent(boxInfo != null ? boxInfo.getPercent() : "");
+                    mFragment.mMyStubView.mBtnBoxUnlocking.setEnabled(true);
 
                     if (boxInfo != null) {
                         if ("01".equals(boxInfo.getIsOpened())) {
-                            mFragment.mBoxviewBoxOpened.setValue("开启");
+                            mFragment.mMyStubView.mBoxviewBoxOpened.setValue("开启");
                         } else if ("02".equals(boxInfo.getIsOpened())) {
-                            mFragment.mBoxviewBoxOpened.setValue("关闭");
+                            mFragment.mMyStubView.mBoxviewBoxOpened.setValue("关闭");
                         }
                     }
 
                     if (boxInfo != null) {
                         if ("01".equals(boxInfo.getIsLocked())) {
-                            mFragment.mBoxviewBoxLocked.setValue(mFragment.getString(R.string.box_info_lock));
-                            mFragment.mBtnBoxUnlocking.setText(mFragment.getString(R.string.box_info_unlock));
+                            mFragment.mMyStubView.mBoxviewBoxLocked.setValue(mFragment.getString(R.string.box_info_lock));
+                            mFragment.mMyStubView.mBtnBoxUnlocking.setText(mFragment.getString(R.string.box_info_unlock));
                         } else if ("02".equals(boxInfo.getIsLocked())) {
-                            mFragment.mBoxviewBoxLocked.setValue(mFragment.getString(R.string.box_info_unlock));
-                            mFragment.mBtnBoxUnlocking.setText(mFragment.getString(R.string.box_info_lock));
+                            mFragment.mMyStubView.mBoxviewBoxLocked.setValue(mFragment.getString(R.string.box_info_unlock));
+                            mFragment.mMyStubView.mBtnBoxUnlocking.setText(mFragment.getString(R.string.box_info_lock));
                         }
                     }
                     break;

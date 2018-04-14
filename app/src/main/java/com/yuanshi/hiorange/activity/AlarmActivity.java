@@ -107,6 +107,7 @@ public class AlarmActivity extends BaseActivity {
             mListBoxOpen = lists[1];
             return true;
         }
+        mTvAlarmTitleList.setVisibility(View.GONE);
         return false;
 //        mListBoxMiss = Arrays.asList("2018", "2018", "2017", "2016", "2015", "2017", "2016", "2015", "2017", "2016", "2015", "2017", "2016", "2015");
 //        mListBoxOpen = Arrays.asList("10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20", "10:20");

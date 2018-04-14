@@ -1,9 +1,13 @@
 package com.yuanshi.hiorange.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +27,7 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
 
 /**
  * @author Zyc
@@ -39,30 +44,13 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     TextView mTbTitle;
     @BindView(R.id.tb)
     Toolbar mTb;
-    @BindView(R.id.btn_voice_obstacle)
-    SwitchButton mBtnVoiceObstacle;
-    @BindView(R.id.btn_voice_lost)
-    SwitchButton mBtnVoiceLost;
-    @BindView(R.id.btn_voice_power_on)
-    SwitchButton mBtnVoicePowerOn;
-    @BindView(R.id.btn_voice_controll)
-    SwitchButton mBtnVoiceControll;
-    @BindView(R.id.btn_voice_follow)
-    SwitchButton mBtnVoiceFollow;
-    @BindView(R.id.btn_voice_power_off)
-    SwitchButton mBtnVoicePowerOff;
     @BindView(R.id.tv_save)
     TextView mTvSave;
-    @BindView(R.id.btn_bt_power_off)
-    SwitchButton mBtnBtPowerOff;
-    @BindView(R.id.btn_help_power_off)
-    SwitchButton mBtnHelpPowerOff;
-    @BindView(R.id.btn_lean_power_off)
-    SwitchButton mBtnLeanPowerOff;
-    @BindView(R.id.btn_box_lost_power_off)
-    SwitchButton mBtnBoxLostPowerOff;
-    @BindView(R.id.btn_lock_power_off)
-    SwitchButton mBtnLockPowerOff;
+    @BindView(R.id.view_stub_voice)
+    ViewStub mViewStubVoice;
+
+    private MyStubView stubView;
+
 
     private String mPhoneNumber;
     private String mPassWord;
@@ -72,6 +60,7 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     private PresenterFactory.ReadOrSetBoxPresenter mSetVoicePresenter;
     private MaterialDialog mDialog;
     private String commandSetVoice;
+    private boolean isShow = false;
 
     private String getTime;
     private int requestType;
@@ -100,17 +89,48 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     private String boxLostCheck = "02";
     private String lockCheck = "02";
 
+    public class MyStubView {
+
+        @BindView(R.id.btn_voice_obstacle)
+        SwitchButton mBtnVoiceObstacle;
+        @BindView(R.id.btn_voice_lost)
+        SwitchButton mBtnVoiceLost;
+        @BindView(R.id.btn_voice_power_on)
+        SwitchButton mBtnVoicePowerOn;
+        @BindView(R.id.btn_voice_controll)
+        SwitchButton mBtnVoiceControll;
+        @BindView(R.id.btn_voice_follow)
+        SwitchButton mBtnVoiceFollow;
+        @BindView(R.id.btn_voice_power_off)
+        SwitchButton mBtnVoicePowerOff;
+        @BindView(R.id.btn_bt_power_off)
+        SwitchButton mBtnBtPowerOff;
+        @BindView(R.id.btn_help_power_off)
+        SwitchButton mBtnHelpPowerOff;
+        @BindView(R.id.btn_lean_power_off)
+        SwitchButton mBtnLeanPowerOff;
+        @BindView(R.id.btn_box_lost_power_off)
+        SwitchButton mBtnBoxLostPowerOff;
+        @BindView(R.id.btn_lock_power_off)
+        SwitchButton mBtnLockPowerOff;
+
+        public MyStubView(View view) {
+            ButterKnife.bind(this, view);
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(getResources().getColor(R.color.statue_bar));
-        setContentView(R.layout.voice_activity);
+        setContentView(R.layout.voice_idle_activity);
         ButterKnife.bind(this);
         init();
     }
 
+    @Optional
     private void init() {
+        mTbTitle.setText(R.string.Soundreminder);
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             mPhoneNumber = getIntent().getExtras().getString(FinalString.PHONE);
@@ -118,45 +138,61 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
             mBoxId = getIntent().getExtras().getString(FinalString.BOX_ID);
         }
 
-        mTbTitle.setText(R.string.Soundreminder);
-        mTvSave.setVisibility(View.VISIBLE);
+        mTvSave.setVisibility(View.GONE);
 
         getTime = TimesCalculator.getStringDate();
-        mDialog = new MaterialDialog.Builder(this).title(R.string.GetAlarmSettings).cancelable(false).build();
+        mDialog = new MaterialDialog.Builder(this).content(R.string.GetAlarmSettings)
+                .progress(true, 0).cancelable(false)
+                .keyListener(new DialogInterface.OnKeyListener() {
+                    @Override
+                    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            dismissDialog();
+                            return true;
+                        }
+                        return false;
+                    }
+                })
+                .build();
         mDialog.show();
         mGetVoiceInfoPresenter = PresenterFactory.createGetInfoPresenter(mPhoneNumber, mBoxId);
 
-        mBtnVoiceObstacle.setTag(OBSTACLE);
-        mBtnVoiceLost.setTag(FOLLOWLOST);
-        mBtnVoicePowerOn.setTag(POWER_ON);
-        mBtnVoiceControll.setTag(CONTROLL);
-        mBtnVoiceFollow.setTag(FOLLOW);
-        mBtnVoicePowerOff.setTag(POWER_OFF);
 
-        mBtnBtPowerOff.setTag(BT);
-        mBtnHelpPowerOff.setTag(HELP);
-        mBtnLeanPowerOff.setTag(LEAN);
-        mBtnBoxLostPowerOff.setTag(BOXLOST);
-        mBtnLockPowerOff.setTag(LOCK);
+    }
 
-        mBtnVoiceObstacle.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnVoiceLost.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnVoicePowerOn.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnVoiceControll.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnVoiceFollow.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnVoicePowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+    private void initSwitchButton() {
+        stubView.mBtnVoiceObstacle.setTag(OBSTACLE);
+        stubView.mBtnVoiceLost.setTag(FOLLOWLOST);
+        stubView.mBtnVoicePowerOn.setTag(POWER_ON);
+        stubView.mBtnVoiceControll.setTag(CONTROLL);
+        stubView.mBtnVoiceFollow.setTag(FOLLOW);
+        stubView.mBtnVoicePowerOff.setTag(POWER_OFF);
 
-        mBtnBtPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnHelpPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnLeanPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnBoxLostPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
-        mBtnLockPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnBtPowerOff.setTag(BT);
+        stubView.mBtnHelpPowerOff.setTag(HELP);
+        stubView.mBtnLeanPowerOff.setTag(LEAN);
+        stubView.mBtnBoxLostPowerOff.setTag(BOXLOST);
+        stubView.mBtnLockPowerOff.setTag(LOCK);
+
+        stubView.mBtnVoiceObstacle.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnVoiceLost.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnVoicePowerOn.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnVoiceControll.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnVoiceFollow.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnVoicePowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+
+        stubView.mBtnBtPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnHelpPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnLeanPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnBoxLostPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
+        stubView.mBtnLockPowerOff.setOnCheckedChangeListener(new MyCheckedChangeListener());
     }
 
     @Override
     protected void onResume() {
         requestType = FinalString.READ_VOICE;
-        mGetVoiceInfoPresenter.doRequest(VoiceActivity.this, getTime, requestType, commandGetVoice, this);
+        mGetVoiceInfoPresenter.doRequest(getApplicationContext(), getTime, requestType, commandGetVoice, this);
         super.onResume();
     }
 
@@ -217,7 +253,7 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
                 getTime = TimesCalculator.getStringDate();
                 mDialog.setContent(R.string.saving);
                 mDialog.show();
-                mGetVoiceInfoPresenter.doRequest(this, getTime, requestType, commandSetVoice, this);
+                mGetVoiceInfoPresenter.doRequest(getApplicationContext(), getTime, requestType, commandSetVoice, this);
                 break;
             case R.id.back:
                 finish();
@@ -241,6 +277,13 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     @Override
     public void onReadSucceed(String result) {
 
+        mTvSave.setVisibility(View.VISIBLE);
+        View view = mViewStubVoice.inflate();
+        stubView = new MyStubView(view);
+
+
+        initSwitchButton();
+        isShow = true;
         if (requestType == FinalString.SET_VOICE) {
             showToast(this, getString(R.string.saveSucceed));
         } else if (requestType == FinalString.READ_VOICE) {
@@ -254,7 +297,7 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
             jsonObject = new JSONObject(result);
             StringBuilder command = new StringBuilder(jsonObject.getString(FinalString.COMMAND));
             commandSetVoice = command.substring(10, 32);
-            MySharedPreference.saveString(this, FinalString.COMMAND, commandSetVoice);
+            MySharedPreference.saveString(getApplicationContext(), FinalString.COMMAND, commandSetVoice);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -271,6 +314,11 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
     @Override
     public void onReadFailed(String result) {
 
+        if (VoiceActivity.this.isFinishing()) {
+            Log.e(TAG, "isDestroyed： " + isDestroyed());
+            Log.e(TAG, "isFinishing： " + isFinishing());
+            return;
+        }
         dismissDialog();
 
         if (requestType == FinalString.SET_VOICE) {
@@ -279,27 +327,39 @@ public class VoiceActivity extends BaseActivity implements IVoiceView {
             showToast(this, getString(R.string.GetFailed));
         }
 
-        commandSetVoice = MySharedPreference.getString(this, FinalString.COMMAND, "020202020202");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                setCheckFromCommand(commandSetVoice);
-            }
-        });
+        if (isShow) {
+            commandSetVoice = MySharedPreference.getString(getApplicationContext(), FinalString.COMMAND, "0202020202020202020202");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setCheckFromCommand(commandSetVoice);
+                }
+            });
+        }
     }
 
     private void setCheckFromCommand(String command) {
-        mBtnVoiceObstacle.setChecked(command.substring(0, 2).equals("01"));
-        mBtnVoiceLost.setChecked(command.substring(2, 4).equals("01"));
-        mBtnVoicePowerOn.setChecked(command.substring(4, 6).equals("01"));
-        mBtnVoiceControll.setChecked(command.substring(6, 8).equals("01"));
-        mBtnVoiceFollow.setChecked(command.substring(8, 10).equals("01"));
-        mBtnVoicePowerOff.setChecked(command.substring(10, 12).equals("01"));
+        stubView.mBtnVoiceObstacle.setChecked(command.substring(0, 2).equals("01"));
+        stubView.mBtnVoiceLost.setChecked(command.substring(2, 4).equals("01"));
+        stubView.mBtnVoicePowerOn.setChecked(command.substring(4, 6).equals("01"));
+        stubView.mBtnVoiceControll.setChecked(command.substring(6, 8).equals("01"));
+        stubView.mBtnVoiceFollow.setChecked(command.substring(8, 10).equals("01"));
+        stubView.mBtnVoicePowerOff.setChecked(command.substring(10, 12).equals("01"));
 
-        mBtnBtPowerOff.setChecked(command.substring(12, 14).equals("01"));
-        mBtnHelpPowerOff.setChecked(command.substring(14, 16).equals("01"));
-        mBtnLeanPowerOff.setChecked(command.substring(16, 18).equals("01"));
-        mBtnBoxLostPowerOff.setChecked(command.substring(18, 20).equals("01"));
-        mBtnLockPowerOff.setChecked(command.substring(20, 22).equals("01"));
+        stubView.mBtnBtPowerOff.setChecked(command.substring(12, 14).equals("01"));
+        stubView.mBtnHelpPowerOff.setChecked(command.substring(14, 16).equals("01"));
+        stubView.mBtnLeanPowerOff.setChecked(command.substring(16, 18).equals("01"));
+        stubView.mBtnBoxLostPowerOff.setChecked(command.substring(18, 20).equals("01"));
+        stubView.mBtnLockPowerOff.setChecked(command.substring(20, 22).equals("01"));
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

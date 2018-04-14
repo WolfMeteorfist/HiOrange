@@ -88,4 +88,5 @@
     <string name="clicktwiceexit">Press twice to exit the program</string>
     <string name="yes">Yes</string>
     <string name="registing">register now...</string>
+    <string name="reconnect">Click For Reconnect</string>
 </resources>

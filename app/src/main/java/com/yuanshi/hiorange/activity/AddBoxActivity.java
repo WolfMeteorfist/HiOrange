@@ -68,7 +68,7 @@ public class AddBoxActivity extends BaseActivity implements IAddBoxView {
         mAlertDialog = new AlertDialog.Builder(this).create();
         mAlertDialog.setMessage("注册中...");
         mTbTitle.setText("添加设备");
-        mPhoneNumber = MySharedPreference.getString(this, FinalString.PHONE, "");
+        mPhoneNumber = MySharedPreference.getString(getApplicationContext(), FinalString.PHONE, "");
     }
 
     @Override
@@ -151,7 +151,7 @@ public class AddBoxActivity extends BaseActivity implements IAddBoxView {
             }
         });
         showToast(this, "添加成功");
-        MySharedPreference.saveString(this, FinalString.BOX_ID, mBoxId);
+        MySharedPreference.saveString(getApplicationContext(), FinalString.BOX_ID, mBoxId);
         startActivities(MainActivity.class, null);
         finish();
     }

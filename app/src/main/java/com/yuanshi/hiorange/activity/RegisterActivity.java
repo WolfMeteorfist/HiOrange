@@ -54,7 +54,7 @@ public class RegisterActivity extends BaseActivity implements IRegisterView {
 
     private void initView() {
 
-        mAlertDialog = new MaterialDialog.Builder(this).content(R.string.registing).build();
+        mAlertDialog = new MaterialDialog.Builder(this).content(R.string.registing).progress(true,0).build();
 
         mTbTitle.setText(R.string.user_register);
 
@@ -84,7 +84,6 @@ public class RegisterActivity extends BaseActivity implements IRegisterView {
     @OnClick({R.id.btn_register_register, R.id.back})
     public void onClick(View view) {
 
-        mAlertDialog.show();
         String phoneNumber = mEtRegisterPhoneNumber.getText().toString();
         String veriftyCode = mEtRegisterIdentifyCode.getText().toString();
         mPassWord = mEtRegisterPassword.getText().toString();
@@ -96,9 +95,10 @@ public class RegisterActivity extends BaseActivity implements IRegisterView {
                         showToast(this, getString(R.string.input_incomplete));
                     } else {
 
+                        mAlertDialog.show();
                         PresenterFactory
                                 .createRegisterPresenter(phoneNumber, mPassWord, veriftyCode)
-                                .doRequest( this);
+                                .doRequest(this);
                     }
                 }
 

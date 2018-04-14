@@ -159,9 +159,9 @@ public class MainActivity extends BaseActivity {
         //该接口回调是用于关闭loginActivity中的dialog
 
 
-        phoneNumber = MySharedPreference.getString(this, FinalString.PHONE, "");
-        boxId = MySharedPreference.getString(this, FinalString.BOX_ID, "");
-        passWord = MySharedPreference.getString(this, FinalString.PASSWORD, "");
+        phoneNumber = MySharedPreference.getString(getApplicationContext(), FinalString.PHONE, "");
+        boxId = MySharedPreference.getString(getApplicationContext(), FinalString.BOX_ID, "");
+        passWord = MySharedPreference.getString(getApplicationContext(), FinalString.PASSWORD, "");
 
         mFragmentManager = getFragmentManager();
 

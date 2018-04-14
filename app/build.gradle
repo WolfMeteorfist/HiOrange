@@ -90,4 +90,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'jp.wasabeef:recyclerview-animators:2.3.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 }

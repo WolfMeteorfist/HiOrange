@@ -91,7 +91,7 @@ public class UnbindActivity extends BaseActivity implements IUnbindView {
         showToast(this, "解绑成功");
         FileUtils.deleteBoxInfoFile();
         setResult(UNBIND_RESULT_CODE_OK);
-        MySharedPreference.cleanSharedPreferences(this);
+        MySharedPreference.cleanSharedPreferences(getApplicationContext());
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {

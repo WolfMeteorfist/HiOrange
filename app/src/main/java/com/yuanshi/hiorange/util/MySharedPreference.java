@@ -63,6 +63,6 @@ public class MySharedPreference {
 
     public static void cleanSharedPreferences(Context context){
         SharedPreferences spf = context.getSharedPreferences(SP_NAME, MODE_PRIVATE);
-        spf.edit().clear().commit();
+        spf.edit().clear().apply();
     }
 }
